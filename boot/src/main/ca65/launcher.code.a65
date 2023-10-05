@@ -1,0 +1,100 @@
+;    boot: Boot.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+; We should be somewhere between $0110 and (lower than) $01F0
+
+; region Launcher
+
+; Load load program (see launcher.inc LOAD_FILENAME, LOAD_FILENAME_LENGTH) and execute (see LOAD_ENTRYPOINT)
+.proc launch
+    ; Set border color
+    lda # CONFIG_BORDER_COLOR
+    sta VIC_EC
+    ; Set background color
+    lda # CONFIG_BACKGROUND_COLOR
+    sta VIC_B0C
+    ; Turn off "searching for FILE" message
+    lda # KERNAL_MSG_OFF
+    jsr KERNAL_SETMSG
+    ; Display "Boot" message
+    ldx # < RESOURCE_STRING_MSG_LAUNCHING
+    ldy # > RESOURCE_STRING_MSG_LAUNCHING
+    jsr puts
+    ; Set file name
+    lda # CONFIG_FILENAME_LENGTH
+    ldx # < RESOURCE_STRING_FILENAME
+    ldy # > RESOURCE_STRING_FILENAME
+    jsr KERNAL_SETNAM
+    ; Set logical file
+    lda # 127                           ; la
+    ldx z:ZPKERNAL_FA                   ; fa e.g. device 8 (disk)
+    ldy # 1                             ; sa
+    jsr KERNAL_SETLFS
+    ; Load
+    lda # KERNAL_LOAD_LOAD
+    ;ldx # $FF                           ; address from file
+    ldx # < CONFIG_ENTRYPOINT
+    ;ldy # $FF                           ; address from file
+    ldy # > CONFIG_ENTRYPOINT
+    jsr KERNAL_LOAD
+    bcs load_failed
+  load_succeeded:
+    ; Setup stack, because it was basically destroyed
+    ldx # $FF
+    txs
+    jmp CONFIG_ENTRYPOINT
+    ; Does not return here
+  load_failed:
+    lda # KERNAL_MSG_ERROR_ENABLE | KERNAL_MSG_STATUS_ENABLE
+    jsr KERNAL_SETMSG
+    ldx # < RESOURCE_STRING_MSG_FAIL
+    ldy # > RESOURCE_STRING_MSG_FAIL
+    jsr puts
+    jmp [BVECTORS_IMAIN]
+.endproc
+
+; endregion
+
+; region Helper procedures
+
+;;; summary: Put string to console
+.proc puts
+    stx AL
+    sty AH
+    ldy # 0
+    loop:
+        lda [AX] , Y
+        beq done
+        jsr KERNAL_CHROUT
+        iny
+        bne loop
+    done:
+    rts
+.endproc
+
+; endregion
+
+; region Resources - String
+
+RESOURCE_STRING_FILENAME: .byte CONFIG_FILENAME , PETSCII_NUL
+
+RESOURCE_STRING_MSG_LAUNCHING: .byte PETSCII_ENABLE_CBM_SHIFT , PETSCII_SHIFTED_MODE , PETSCII_DISABLE_CBM_SHIFT , PETSCII_BLACK , PETSCII_CLR , CONFIG_TEXT_COLOR , "Boot" , PETSCII_RETURN , PETSCII_NUL
+
+RESOURCE_STRING_MSG_FAIL: .byte "Fail" , PETSCII_RETURN , PETSCII_NUL
+
+; endregion

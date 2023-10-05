@@ -1,0 +1,117 @@
+;    load: Load.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+;region Macros
+
+.macro PUTS_VW a_string
+    ldx # < (a_string)
+    ldy # > (a_string)
+    jsr puts
+.endmacro
+
+;endregion
+
+.export LOAD_SPRITES_BIN_AT := $F200
+.export LOAD_U64_CHR_AT     := $F800
+.export LOAD_KERNAL_MOD_AT  := $C400
+.export LOAD_SCREEN_MOD_AT  := $C600
+
+;region Entry point
+
+.proc main
+    try
+        PUTS_VW RESOURCE_STRING_MESSAGE_LOADING
+        ;
+        jsr load_u64_chr
+        bcs _catch
+        ;
+        jsr load_sprites_bin
+        bcs _catch
+        ;
+        jsr load_kernal_mod
+        bcs _catch
+        ;
+        jsr load_screen_mod
+        bcs _catch
+        ;
+        bcc _finally
+    catch
+        PUTS_VW RESOURCE_STRING_MESSAGE_LOAD_FAILED
+        jmp [BVECTORS_IMAIN]
+    finally
+        ; NOP
+    end
+    ;
+    ; Because we've been boot loaded, there is no context to rts to.
+    ; TODO loop forever for now
+    from
+        dec VIC_EC
+        clc
+    loop
+        ; NOP
+    next
+        bcc _loop
+    end
+    ; TODO: jump to OS64 Kernel
+.endproc
+
+;endregion
+
+;region Commands
+
+;;; summmary: Load U64 charset
+;;; return: CC=OK , CS=FAIL
+.proc load_u64_chr
+    ldx # < RESOURCE_STRING_CHARSET_FILENAME
+    ldy # > RESOURCE_STRING_CHARSET_FILENAME
+    ldbxv LOAD_U64_CHR_AT
+    jsr load_prg_at
+    ; CC=OK/CS=FAIL
+    rts
+.endproc
+
+;;; summmary: Load sprites
+;;; return: CC=OK , CS=FAIL
+.proc load_sprites_bin
+    ldx # < RESOURCE_STRING_SPRITES_FILENAME
+    ldy # > RESOURCE_STRING_SPRITES_FILENAME
+    ldbxv LOAD_SPRITES_BIN_AT
+    jsr load_prg_at
+    ; CC=OK/CS=FAIL
+    rts
+.endproc
+
+.proc load_kernal_mod
+    ldx # < RESOURCE_STRING_MOD_KERNAL_FILENAME
+    ldy # > RESOURCE_STRING_MOD_KERNAL_FILENAME
+    ldbxv LOAD_KERNAL_MOD_AT
+    jsr load_prg_at
+    ; CC=OK/CS=FAIL
+    rts
+.endproc
+
+.proc load_screen_mod
+    ldx # < RESOURCE_STRING_MOD_SCREEN_FILENAME
+    ldy # > RESOURCE_STRING_MOD_SCREEN_FILENAME
+    ldbxv LOAD_SCREEN_MOD_AT
+    jsr load_prg_at
+    ; CC=OK/CS=FAIL
+    rts
+.endproc
+
+; endregion

@@ -1,5 +1,5 @@
-# os64
-The MF OS/64 (C) c64pectre GPL3
+# os64/test-screen
+OS64 app test screen.
 
 # Build tools
 * PMP

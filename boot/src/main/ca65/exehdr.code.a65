@@ -1,0 +1,39 @@
+;    boot: Boot.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+; region basic
+
+.org BASIC_LOAD_ADDRESS
+
+BASIC_MEMORY_BEGIN:
+
+; Basic exeheader
+BASIC_LINE_1:
+    .addr BASIC_LINE_2
+    .word 1                             ; line number
+    .byte "d%" , BASIC_TOKEN_EQUALS , BASIC_TOKEN_PEEK , "(186):" , BASIC_TOKEN_LOAD , '"' , "boot.prg" , '"' , ",d%,1" , BASIC_TOKEN_EOL
+BASIC_LINE_2:
+    .addr BASIC_LINE_3
+    .word 2                             ; line number
+    .byte BASIC_TOKEN_REM , "os64 (c) 2023 c64pectre.org. gplv3" , BASIC_TOKEN_EOL
+BASIC_LINE_3:
+    .word BASIC_NEXT_LINE_END_MARKER
+
+BASIC_MEMORY_END:
+
+; endregion

@@ -1,0 +1,121 @@
+;    load: Load.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+;;; summary: load PRG file at address
+;;; parameters:
+;;;   X#Y File name NUL terminated
+;;;   BX Load address
+;;; changed: A, X, Y, AX, BX, CX
+;;; return: CC = OK , CS = FAIL
+;;; notes:
+;;;   File must contain at least 2 bytes else load will load too much!
+;;;   EOI is set when KERNAL_ACPTR retrieves the last byte, so you need to store that and after that check EOI.
+.proc load_prg_at
+    try
+        stx CL
+        sty CH
+        ; Print "{filename} {return}"
+        jsr puts
+        lda # PETSCII_RETURN
+        jsr KERNAL_CHROUT
+        ldx CL
+        ldy CH
+        ;
+        ; Load
+        ;
+        ; Clear the serial status
+        lda # 0
+        sta ZPKERNAL_STATUS
+    BREAK1:
+        ; FA
+        lda ZPKERNAL_FA
+        ; A=8
+        jsr KERNAL_LISTEN
+        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_SA_OPEN)
+        jsr KERNAL_SECOND
+        ;
+        ; Send file name
+        from
+            ldy # 0
+        loop
+            lda [CX] , Y
+            beq _end
+            jsr KERNAL_CIOUT
+        next
+            iny
+            bne _loop
+        end
+        jsr KERNAL_UNLSN
+        ;
+        lda ZPKERNAL_FA
+        ; A=8
+        jsr KERNAL_TALK                 ; Establish channel
+        ;
+        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_SA_SECOND)  ; sa
+        jsr KERNAL_TKSA                 ; Tell it to load
+        ;
+        ; Skip load address (2 bytes)
+        jsr KERNAL_ACPTR
+        jsr KERNAL_READST
+        bne _catch
+        jsr KERNAL_ACPTR
+        jsr KERNAL_READST
+        bne _catch
+        ;
+        from
+        loop
+            jsr KERNAL_ACPTR
+            tay
+            jsr KERNAL_READST
+            tax
+            and # (KERNAL_IO_ERROR_READ_TIMEOUT | KERNAL_IO_ERROR_DEVICE_NOT_PRESENT)
+            bne _catch
+            tya
+            ldy # 0
+            sta [BX] , Y
+            txa
+            and # KERNAL_IO_EOI
+            bne _end                    ; EOI
+        next
+            incbx
+            jsr KERNAL_STOP
+            beq _catch                  ; Stop
+            bne _loop                   ; bra
+        end
+        ;
+        ;jsr KERNAL_UNTLK                ; Close channel not needed on EOI says https://www.pagetable.com/?p=1031
+        ;
+        ; Close file
+        lda ZPKERNAL_FA
+        jsr KERNAL_LISTEN
+        ;
+        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_SA_CLOSE)
+        jsr KERNAL_SECOND
+        jsr KERNAL_UNLSN
+        clc                             ; Succeeded
+        bcc _finally
+    catch
+        jsr KERNAL_UNLSN
+        jsr KERNAL_UNTLK
+        sec                             ; Failed
+    finally
+        ; NOP
+    end
+    ;
+    rts
+.endproc

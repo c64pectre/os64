@@ -1,5 +1,5 @@
-# os64
-The MF OS/64 (C) c64pectre GPL3
+# os64/load
+OS64 Load.
 
 # Build tools
 * PMP
