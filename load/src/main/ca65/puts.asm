@@ -16,9 +16,8 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.include "c64/registers.inc"
-
 .include "c64/kernal-r3.inc"
+.include "c64/registers.inc"
 .include "structured-programming.inc"
 
 .segment "CODE"

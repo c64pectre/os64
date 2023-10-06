@@ -26,10 +26,12 @@
 
 ;endregion
 
-.export LOAD_SPRITES_BIN_AT := $F200
-.export LOAD_U64_CHR_AT     := $F800
-.export LOAD_KERNAL_MOD_AT  := $C400
-.export LOAD_SCREEN_MOD_AT  := $C600
+.export LOAD_KERNAL_MOD_AT      := $C200
+.export LOAD_SCREEN_MOD_AT      := $C400
+.export LOAD_TEST_SCREEN_APP_AT := $C600
+.export LOAD_IBN_HANDLER_AT     := $CE00
+.export LOAD_SPRITES_AT         := $F200
+.export LOAD_CHARSET_AT         := $F800
 
 ;region Entry point
 
@@ -37,16 +39,22 @@
     try
         PUTS_VW RESOURCE_STRING_MESSAGE_LOADING
         ;
-        jsr load_u64_chr
+        jsr load_charset
         bcs _catch
         ;
-        jsr load_sprites_bin
+        jsr load_sprites
+        bcs _catch
+        ;
+        jsr load_brk_handler
         bcs _catch
         ;
         jsr load_kernal_mod
         bcs _catch
         ;
         jsr load_screen_mod
+        bcs _catch
+        ;
+        jsr load_test_screen_app
         bcs _catch
         ;
         bcc _finally
@@ -58,6 +66,11 @@
     end
     ;
     ; Because we've been boot loaded, there is no context to rts to.
+
+    jsr bootstrap
+    ;
+    jmp [BVECTORS_IMAIN]
+    ;
     ; TODO loop forever for now
     from
         dec VIC_EC
@@ -76,10 +89,10 @@
 
 ;;; summmary: Load U64 charset
 ;;; return: CC=OK , CS=FAIL
-.proc load_u64_chr
+.proc load_charset
     ldx # < RESOURCE_STRING_CHARSET_FILENAME
     ldy # > RESOURCE_STRING_CHARSET_FILENAME
-    ldbxv LOAD_U64_CHR_AT
+    ldbxv LOAD_CHARSET_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
@@ -87,30 +100,64 @@
 
 ;;; summmary: Load sprites
 ;;; return: CC=OK , CS=FAIL
-.proc load_sprites_bin
+.proc load_sprites
     ldx # < RESOURCE_STRING_SPRITES_FILENAME
     ldy # > RESOURCE_STRING_SPRITES_FILENAME
-    ldbxv LOAD_SPRITES_BIN_AT
+    ldbxv LOAD_SPRITES_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
 .endproc
 
+;;; summmary: Load BRK handler
+;;; return: CC=OK , CS=FAIL
+.proc load_brk_handler
+    ldx # < RESOURCE_STRING_BRK_HANDLER_FILENAME
+    ldy # > RESOURCE_STRING_BRK_HANDLER_FILENAME
+    ldbxv LOAD_IBN_HANDLER_AT
+    jsr load_prg_at
+    clc
+    ; CC=OK/CS=FAIL
+    rts
+.endproc
+
+;;; summmary: Load kernal mod
+;;; return: CC=OK , CS=FAIL
 .proc load_kernal_mod
-    ldx # < RESOURCE_STRING_MOD_KERNAL_FILENAME
-    ldy # > RESOURCE_STRING_MOD_KERNAL_FILENAME
+    ldx # < RESOURCE_STRING_KERNAL_MOD_FILENAME
+    ldy # > RESOURCE_STRING_KERNAL_MOD_FILENAME
     ldbxv LOAD_KERNAL_MOD_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
 .endproc
 
+;;; summmary: Load screen mod
+;;; return: CC=OK , CS=FAIL
 .proc load_screen_mod
-    ldx # < RESOURCE_STRING_MOD_SCREEN_FILENAME
-    ldy # > RESOURCE_STRING_MOD_SCREEN_FILENAME
+    ldx # < RESOURCE_STRING_SCREEN_MOD_FILENAME
+    ldy # > RESOURCE_STRING_SCREEN_MOD_FILENAME
     ldbxv LOAD_SCREEN_MOD_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
+    rts
+.endproc
+
+;;; summmary: Load test screen app
+;;; return: CC=OK , CS=FAIL
+.proc load_test_screen_app
+    ldx # < RESOURCE_STRING_TEST_SCREEN_APP_FILENAME
+    ldy # > RESOURCE_STRING_TEST_SCREEN_APP_FILENAME
+    ldbxv LOAD_TEST_SCREEN_APP_AT
+    jsr load_prg_at
+    ; CC=OK/CS=FAIL
+    rts
+.endproc
+
+.proc bootstrap
+    ; Wire in brk, irq, nmi handlers
+    jsr LOAD_IBN_HANDLER_AT
+    ;
     rts
 .endproc
 

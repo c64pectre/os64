@@ -16,9 +16,8 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.include "c64/registers.inc"
-
 .include "structured-programming.inc"
+.include "c64/registers.inc"
 
 .segment "CODE"
 .include "strlen.code.a65"

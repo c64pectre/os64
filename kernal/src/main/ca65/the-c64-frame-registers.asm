@@ -1,4 +1,4 @@
-;    load: Load.
+;    kernal: OS64 module $00 Kernal.
 ;    Copyright (C) 2023  C64PECTRE
 ;
 ;    This program is free software: you can redistribute it and/or modify

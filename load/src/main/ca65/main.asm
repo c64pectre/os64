@@ -18,12 +18,10 @@
 
 .include "macros.inc"
 .include "structured-programming.inc"
-
 .include "c64/basic-internal.inc"
 .include "c64/petscii.inc"
 .include "c64/registers.inc"
 .include "c64/vic.inc"
-
 .include "puts.import.inc"
 .include "load_prg_at.import.inc"
 

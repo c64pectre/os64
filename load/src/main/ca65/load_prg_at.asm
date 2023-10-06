@@ -16,12 +16,12 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
+.include "macros.inc"
+.include "structured-programming.inc"
 .include "c64/registers.inc"
 .include "c64/petscii.inc"
 .include "c64/kernal-r3.inc"
 .include "c64/kernal-r3-internal.inc"
-.include "structured-programming.inc"
-.include "macros.inc"
 .include "puts.import.inc"
 
 .segment "CODE"

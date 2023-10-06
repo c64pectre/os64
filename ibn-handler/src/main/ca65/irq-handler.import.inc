@@ -1,4 +1,4 @@
-;    screen: OS64 module $01 SCREEN.
+;    ibn-handler: OS64 IRQ BRK NMI handler.
 ;    Copyright (C) 2023  C64PECTRE
 ;
 ;    This program is free software: you can redistribute it and/or modify
@@ -16,4 +16,4 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.include "c64/frame-registers.export.asm"
+.import irq_handler
