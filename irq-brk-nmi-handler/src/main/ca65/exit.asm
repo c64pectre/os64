@@ -1,4 +1,4 @@
-;    ibn-handler: OS64 IRQ BRK NMI handler.
+;    irq-brk-nmi-handler: OS64 IRQ BRK NMI handler.
 ;    Copyright (C) 2023  C64PECTRE
 ;
 ;    This program is free software: you can redistribute it and/or modify
@@ -16,4 +16,14 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.import brk_handler
+.include "macros.inc"
+.include "c64/kernal-r3-internal.inc"
+.include "c64/registers.inc"
+.include "brk-handler.import.inc"
+.include "irq-handler.import.inc"
+.include "nmi-handler.import.inc"
+
+.segment "CODE"
+.include "exit.code.a65"
+
+.include "exit.export.a65"

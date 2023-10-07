@@ -16,6 +16,14 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.segment "LOADADDR"
+.include "macros.inc"
+.include "c64/kernal-r3-internal.inc"
+.include "c64/registers.inc"
+.include "brk-handler.import.inc"
+.include "irq-handler.import.inc"
+.include "nmi-handler.import.inc"
 
-.addr $0000
+.segment "CODE"
+.include "init.code.a65"
+
+.include "init.export.a65"

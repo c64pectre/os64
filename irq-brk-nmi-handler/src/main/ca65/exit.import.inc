@@ -16,6 +16,4 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.segment "LOADADDR"
-
-.addr $0000
+.import exit

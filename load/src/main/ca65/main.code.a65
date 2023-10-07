@@ -26,12 +26,12 @@
 
 ;endregion
 
-.export LOAD_KERNAL_MOD_AT      := $C200
-.export LOAD_SCREEN_MOD_AT      := $C400
-.export LOAD_TEST_SCREEN_APP_AT := $C600
-.export LOAD_IBN_HANDLER_AT     := $CE00
-.export LOAD_SPRITES_AT         := $F200
-.export LOAD_CHARSET_AT         := $F800
+.export LOAD_KERNAL_MOD_AT          := $C200
+.export LOAD_SCREEN_MOD_AT          := $C400
+.export LOAD_TEST_SCREEN_APP_AT     := $C600
+.export LOAD_IRQ_BRK_NMI_HANDLER_AT := $CE00
+.export LOAD_SPRITES_AT             := $F200
+.export LOAD_CHARSET_AT             := $F800
 
 ;region Entry point
 
@@ -114,7 +114,7 @@
 .proc load_brk_handler
     ldx # < RESOURCE_STRING_BRK_HANDLER_FILENAME
     ldy # > RESOURCE_STRING_BRK_HANDLER_FILENAME
-    ldbxv LOAD_IBN_HANDLER_AT
+    ldbxv LOAD_IRQ_BRK_NMI_HANDLER_AT
     jsr load_prg_at
     clc
     ; CC=OK/CS=FAIL
@@ -156,7 +156,7 @@
 
 .proc bootstrap
     ; Wire in brk, irq, nmi handlers
-    jsr LOAD_IBN_HANDLER_AT
+    jsr LOAD_IRQ_BRK_NMI_HANDLER_AT
     ;
     rts
 .endproc

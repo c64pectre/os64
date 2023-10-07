@@ -16,6 +16,12 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.segment "LOADADDR"
-
-.addr $0000
+.proc exit
+    sei
+        ldwv KVECTORS_CINV  , KERNAL_KEY
+        ldwv KVECTORS_CBINV , KERNAL_TIMB
+        ldwv KVECTORS_NMINV , KERNAL_NNMI
+    cli
+    ;
+    rts
+.endproc
