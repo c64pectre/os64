@@ -41,12 +41,11 @@
         ; Clear the serial status
         lda # 0
         sta ZPKERNAL_STATUS
-    BREAK1:
         ; FA
         lda ZPKERNAL_FA
         ; A=8
         jsr KERNAL_LISTEN
-        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_SA_OPEN)
+        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_OPEN)
         jsr KERNAL_SECOND
         ;
         ; Send file name
@@ -66,7 +65,7 @@
         ; A=8
         jsr KERNAL_TALK                 ; Establish channel
         ;
-        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_SA_SECOND)  ; sa
+        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_SECOND)  ; sa
         jsr KERNAL_TKSA                 ; Tell it to load
         ;
         ; Skip load address (2 bytes)
@@ -104,7 +103,7 @@
         lda ZPKERNAL_FA
         jsr KERNAL_LISTEN
         ;
-        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_SA_CLOSE)
+        lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_CLOSE)
         jsr KERNAL_SECOND
         jsr KERNAL_UNLSN
         clc                             ; Succeeded

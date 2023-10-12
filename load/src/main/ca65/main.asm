@@ -25,6 +25,8 @@
 .include "puts.import.inc"
 .include "load_prg_at.import.inc"
 
+.include "../../../../irq-brk-nmi-drv/src/main/ca65/entrypoints.import.public.inc"
+
 .include "main.inc"
 
 .segment "MAIN"

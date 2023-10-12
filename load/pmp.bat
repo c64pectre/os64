@@ -7,3 +7,4 @@ set PMP_COMPILER=ca65
 set PMP_COMPILER_CA65_OPTIONS=--ignore-case --feature bracket_as_indirect
 
 set PMP_PACKAGER=ld65
+set PMP_PACKAGER_LD65_OPTIONS=

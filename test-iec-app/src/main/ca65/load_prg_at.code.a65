@@ -1,0 +1,122 @@
+;    test-iec-app: OS64 app test IEC.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+;;; summary: Load PRG file
+;;; parameters:
+;;;   A_ADDRESS
+;;;   A_FILENAME
+;;;   A_PA
+;;; return:
+;;;   P.C: 0=CC=OK / 1=CS=FAIL
+;;; changed: A, X, Y, CX, BX
+.proc load_prg_at
+    __begin_cedecl_frame
+        A_PA = < -1
+        A_FILENAME = < -3
+        A_ADDRESS = < -5
+        ;
+        try
+            RESTORE_FP
+            ldbxp A_ADDRESS
+            lda_p A_PA
+            ;BEGIN_PUSH
+            ;php_a
+            ;END_PUSH
+            jsr iec_listen
+            bcs _catch
+            ;
+            ;BEGIN_PUSH
+            ;php_vb DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_OPEN
+            lda # DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_OPEN
+            ;END_PUSH
+            jsr iec_listen_second
+            bcs _catch
+            ;
+            ;
+            ; Send file name
+            from
+                RESTORE_FP
+                ldcxp A_FILENAME
+                ldy # 0
+            loop
+                lda [CX] , Y
+                beq _end
+                jsr iec_byte_out
+            next
+                iny
+                bne _loop
+            end
+            ;
+            jsr iec_unlisten
+            ;
+            ;lda ZPKERNAL_FA
+            RESTORE_FP
+            lda_p A_PA
+            ; A=8
+            jsr iec_talk                                        ; Establish channel
+            bcs _catch
+            ;
+            lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_SECOND)  ; sa
+            jsr iec_talk_second                                 ; Tell it to load
+            bcs _catch
+            ;
+            ; Skip load address (2 bytes)
+            jsr iec_byte_in
+            lda L_STATUS
+            bne _catch
+            jsr iec_byte_in
+            lda L_STATUS
+            bne _catch
+            ;
+            from
+                ldy # 0
+            loop
+                jsr iec_byte_in
+                tax
+                lda L_STATUS
+                and # (KERNAL_IO_ERROR_READ_TIMEOUT | KERNAL_IO_ERROR_DEVICE_NOT_PRESENT)
+                bne _catch
+                txa
+                sta [BX] , Y
+                lda L_STATUS
+                and # KERNAL_IO_EOI
+                bne _end                                    ; break because EOI
+            next
+                inc_bx
+                bne _loop                                   ; bra because: we should never load wraping $FFFF to $0000
+            end
+            ;
+            ;jsr KERNAL_UNTLK ; Close channel not needed on EOI says https://www.pagetable.com/?p=1031
+            ;
+            ; Close file
+            RESTORE_FP
+            lda_p A_PA
+            jsr iec_listen
+            ;
+            lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_CLOSE)
+            jsr iec_listen_second
+            jsr iec_unlisten
+            ;
+            clc                                                 ;OK
+            bcc _finally
+        catch
+            sec
+        finally_end
+    __end_cedecl_frame
+    rts
+.endproc

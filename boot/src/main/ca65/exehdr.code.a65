@@ -30,7 +30,7 @@ BASIC_LINE_1:
 BASIC_LINE_2:
     .addr BASIC_LINE_3
     .word 2                             ; line number
-    .byte BASIC_TOKEN_REM , "os64 (c) 2023 c64pectre.org. gplv3" , BASIC_TOKEN_EOL
+    .byte BASIC_TOKEN_REM , " os64 (c) 2023 c64pectre.org. gplv3" , BASIC_TOKEN_EOL
 BASIC_LINE_3:
     .word BASIC_NEXT_LINE_END_MARKER
 

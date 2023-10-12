@@ -1,0 +1,317 @@
+;    system-drv: OS64 System driver.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+.proc jmp_vic_lda_x
+    jmp vic_lda_x
+.endproc
+
+.proc jmp_vic_sta_x
+    jmp vic_sta_x
+.endproc
+
+.proc jmp_vic_lda_y
+    jmp vic_lda_y
+.endproc
+
+.proc jmp_vic_sta_y
+    jmp vic_sta_y
+.endproc
+
+.proc jmp_vic_ora_x
+    jmp vic_ora_x
+.endproc
+
+.proc jmp_vic_ora_y
+    jmp vic_ora_y
+.endproc
+
+.proc jmp_vic_and_x
+    jmp vic_and_x
+.endproc
+
+.proc jmp_vic_and_y
+    jmp vic_and_y
+.endproc
+
+.proc jmp_vic_eor_x
+    jmp vic_eor_x
+.endproc
+
+.proc jmp_vic_eor_y
+    jmp vic_eor_y
+.endproc
+
+.proc jmp_sid_lda_x
+    jmp sid_lda_x
+.endproc
+
+.proc jmp_sid_sta_x
+    jmp sid_sta_x
+.endproc
+
+.proc jmp_sid_lda_y
+    jmp sid_lda_y
+.endproc
+
+.proc jmp_sid_sta_y
+    jmp sid_sta_y
+.endproc
+
+.proc jmp_sid_ora_x
+    jmp sid_ora_x
+.endproc
+
+.proc jmp_sid_ora_y
+    jmp sid_ora_y
+.endproc
+
+.proc jmp_sid_and_x
+    jmp sid_and_x
+.endproc
+
+.proc jmp_sid_and_y
+    jmp sid_and_y
+.endproc
+
+.proc jmp_sid_eor_x
+    jmp sid_eor_x
+.endproc
+
+.proc jmp_sid_eor_y
+    jmp sid_eor_y
+.endproc
+
+.proc jmp_cia_1_lda_x
+    jmp cia_1_lda_x
+.endproc
+
+.proc jmp_cia_1_sta_x
+    jmp cia_1_sta_x
+.endproc
+
+.proc jmp_cia_1_lda_y
+    jmp cia_1_lda_y
+.endproc
+
+.proc jmp_cia_1_sta_y
+    jmp cia_1_sta_y
+.endproc
+
+.proc jmp_cia_1_ora_x
+    jmp cia_1_ora_x
+.endproc
+
+.proc jmp_cia_1_ora_y
+    jmp cia_1_ora_y
+.endproc
+
+.proc jmp_cia_1_and_x
+    jmp cia_1_and_x
+.endproc
+
+.proc jmp_cia_1_and_y
+    jmp cia_1_and_y
+.endproc
+
+.proc jmp_cia_1_eor_x
+    jmp cia_1_eor_x
+.endproc
+
+.proc jmp_cia_1_eor_y
+    jmp cia_1_eor_y
+.endproc
+
+.proc jmp_cia_2_lda_x
+    jmp cia_2_lda_x
+.endproc
+
+.proc jmp_cia_2_sta_x
+    jmp cia_2_sta_x
+.endproc
+
+.proc jmp_cia_2_lda_y
+    jmp cia_2_lda_y
+.endproc
+
+.proc jmp_cia_2_sta_y
+    jmp cia_2_sta_y
+.endproc
+
+.proc jmp_cia_2_ora_x
+    jmp cia_2_ora_x
+.endproc
+
+.proc jmp_cia_2_ora_y
+    jmp cia_2_ora_y
+.endproc
+
+.proc jmp_cia_2_and_x
+    jmp cia_2_and_x
+.endproc
+
+.proc jmp_cia_2_and_y
+    jmp cia_2_and_y
+.endproc
+
+.proc jmp_cia_2_eor_x
+    jmp cia_2_eor_x
+.endproc
+
+.proc jmp_cia_2_eor_y
+    jmp cia_2_eor_y
+.endproc
+
+.proc jmp_io_area_1_lda_x
+    jmp io_area_1_lda_x
+.endproc
+
+.proc jmp_io_area_1_sta_x
+    jmp io_area_1_sta_x
+.endproc
+
+.proc jmp_io_area_1_lda_y
+    jmp io_area_1_lda_y
+.endproc
+
+.proc jmp_io_area_1_sta_y
+    jmp io_area_1_sta_y
+.endproc
+
+.proc jmp_io_area_1_ora_x
+    jmp io_area_1_ora_x
+.endproc
+
+.proc jmp_io_area_1_ora_y
+    jmp io_area_1_ora_y
+.endproc
+
+.proc jmp_io_area_1_and_x
+    jmp io_area_1_and_x
+.endproc
+
+.proc jmp_io_area_1_and_y
+    jmp io_area_1_and_y
+.endproc
+
+.proc jmp_io_area_1_eor_x
+    jmp io_area_1_eor_x
+.endproc
+
+.proc jmp_io_area_1_eor_y
+    jmp io_area_1_eor_y
+.endproc
+
+.proc jmp_io_area_2_lda_x
+    jmp io_area_2_lda_x
+.endproc
+
+.proc jmp_io_area_2_sta_x
+    jmp io_area_2_sta_x
+.endproc
+
+.proc jmp_io_area_2_lda_y
+    jmp io_area_2_lda_y
+.endproc
+
+.proc jmp_io_area_2_sta_y
+    jmp io_area_2_sta_y
+.endproc
+
+.proc jmp_io_area_2_ora_x
+    jmp io_area_2_ora_x
+.endproc
+
+.proc jmp_io_area_2_ora_y
+    jmp io_area_2_ora_y
+.endproc
+
+.proc jmp_io_area_2_and_x
+    jmp io_area_2_and_x
+.endproc
+
+.proc jmp_io_area_2_and_y
+    jmp io_area_2_and_y
+.endproc
+
+.proc jmp_io_area_2_eor_x
+    jmp io_area_2_eor_x
+.endproc
+
+.proc jmp_io_area_2_eor_y
+    jmp io_area_2_eor_y
+.endproc
+
+.proc jmp_io_area_1_copy_from_memory
+    jmp io_area_1_copy_from_memory
+.endproc
+
+.proc jmp_io_area_1_copy_to_memory
+    jmp io_area_1_copy_to_memory
+.endproc
+
+.proc jmp_io_lda_ax_y
+    jmp io_lda_ax_y
+.endproc
+
+.proc jmp_io_sta_ax_y
+    jmp io_sta_ax_y
+.endproc
+
+.proc jmp_io_ora_ax_y
+    jmp io_ora_ax_y
+.endproc
+
+.proc jmp_io_and_ax_y
+    jmp io_and_ax_y
+.endproc
+
+.proc jmp_io_eor_ax_y
+    jmp io_eor_ax_y
+.endproc
+
+.proc jmp_iec_listen_second
+    jmp iec_listen_second
+.endproc
+
+.proc jmp_iec_talk_second
+    jmp iec_talk_second
+.endproc
+
+.proc jmp_iec_byte_in
+    jmp iec_byte_in
+.endproc
+
+.proc jmp_iec_byte_out
+    jmp iec_byte_out
+.endproc
+
+.proc jmp_iec_untalk
+    jmp iec_untalk
+.endproc
+
+.proc jmp_iec_unlisten
+    jmp iec_unlisten
+.endproc
+
+.proc jmp_iec_listen
+    jmp iec_listen
+.endproc
+
+.proc jmp_iec_talk
+    jmp iec_talk
+.endproc

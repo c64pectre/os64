@@ -1,0 +1,1278 @@
+;    system-drv: OS64 System driver.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+;region VIC
+
+    .proc vic_lda_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            lda VIC_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_sta_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            sta VIC_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_lda_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            lda VIC_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_sta_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            sta VIC_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_ora_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            ora VIC_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_ora_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            ora VIC_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_and_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            and VIC_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_and_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            and VIC_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_eor_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            eor VIC_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc vic_eor_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            eor VIC_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+;endregion
+
+;region SID
+
+    .proc sid_lda_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            lda SID_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_sta_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            sta SID_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_lda_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            lda SID_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_sta_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            sta SID_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_ora_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            ora SID_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_ora_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            ora SID_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_and_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            and SID_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_and_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            and SID_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_eor_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            eor SID_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc sid_eor_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            eor SID_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+;endregion
+
+;region CIA-1
+
+    .proc cia_1_lda_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            lda CIA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_sta_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            sta CIA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_lda_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            lda CIA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_sta_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            sta CIA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_ora_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            ora CIA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_ora_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            ora CIA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_and_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            and CIA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_and_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            and CIA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_eor_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            eor CIA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_1_eor_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            eor CIA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+;endregion
+
+;region CIA-2
+
+    .proc cia_2_lda_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            lda CIA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_sta_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            sta CIA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_lda_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            lda CIA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_sta_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            sta CIA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_ora_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            ora CIA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_ora_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            ora CIA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_and_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            and CIA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_and_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            and CIA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_eor_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            eor CIA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc cia_2_eor_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            eor CIA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+;endregion
+
+;region IO-AREA-1
+
+    .proc io_area_1_lda_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            lda IO_AREA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_sta_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            sta IO_AREA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_lda_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            lda IO_AREA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_sta_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            sta IO_AREA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_ora_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            ora IO_AREA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_ora_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            ora IO_AREA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_and_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            and IO_AREA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_and_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            and IO_AREA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_eor_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            eor IO_AREA_1_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_1_eor_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            eor IO_AREA_1_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+;endregion
+
+;region IO-AREA-2
+
+    .proc io_area_2_lda_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            lda IO_AREA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_sta_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            sta IO_AREA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_lda_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            lda IO_AREA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_sta_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            sta IO_AREA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_ora_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            ora IO_AREA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_ora_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            ora IO_AREA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_and_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            and IO_AREA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_and_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            and IO_AREA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_eor_x
+        php
+            sei
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            sty CPU_PORT_DATA
+            eor IO_AREA_2_BASE , x
+            ldy # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            sty CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_area_2_eor_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            eor IO_AREA_2_BASE , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+;endregion
+
+;region For GeoRAM (GEORAM_PAGE = IO_AREA_1_BASE = $DE00)
+
+    ;;; summary: copy memory page to io area 1
+    ;;; parameters:
+    ;;;   AX  address of memory page
+    .proc io_area_1_copy_from_memory
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+
+            from
+                ldy # 0
+            loop
+                lda [AX] , y
+                sta IO_AREA_1_BASE , y
+            next
+                iny
+                bne _loop
+            end
+            ;
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    ;;; summary: copy io area 1 to memory page
+    ;;; parameters:
+    ;;;   AX  address of memory page
+    .proc io_area_1_copy_to_memory
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+
+            from
+                ldy # 0
+            loop
+                lda IO_AREA_1_BASE , y
+                sta [AX] , y
+            next
+                iny
+                bne _loop
+            end
+            ;
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+;endregion
+
+;region Access to IO area
+
+    .proc io_lda_ax_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            lda [AX] , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_sta_ax_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            sta [AX] , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_ora_ax_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            ora [AX] , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_and_ax_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            and [AX] , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+    .proc io_eor_ax_y
+        php
+            sei
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/RAM
+            stx CPU_PORT_DATA
+            eor [AX] , y
+            ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+            stx CPU_PORT_DATA
+        plp
+        ;
+        rts
+    .endproc
+
+;endregion
+
+;region IEC
+
+    ;;; summary: IEC send secondary address for listen
+    ;;; parameters:
+    ;;;   A: Secondary address
+    ;;; returns:
+    ;;;   X: Status
+    .proc iec_listen_second
+        tay
+        lda ZPKERNAL_STATUS
+        pha
+            lda ZPKERNAL_C3P0
+            pha
+                lda ZPKERNAL_BSOUR
+                pha
+                    lda ZPKERNAL_PCNTR_R2D2
+                    pha
+                        lda ZPKERNAL_BSOUR1_FIRT
+                        pha
+                            lda ZPKERNAL_CNTDN_COUNT
+                            pha
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/ROM
+                                stx CPU_PORT_DATA
+                                    tya
+                                    jsr KERNAL_SECOND
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+                                stx CPU_PORT_DATA
+                                ldx ZPKERNAL_STATUS
+                            pla
+                            sta ZPKERNAL_CNTDN_COUNT
+                        pla
+                        sta ZPKERNAL_BSOUR1_FIRT
+                    pla
+                    sta ZPKERNAL_PCNTR_R2D2
+                pla
+                sta ZPKERNAL_BSOUR
+            pla
+            sta ZPKERNAL_C3P0
+        pla
+        sta ZPKERNAL_STATUS
+        ;
+        rts
+    .endproc
+
+    ;;; summary: IEC send secondary address for talking
+    ;;; parameters:
+    ;;;   A: Secondary address
+    ;;; returns:
+    ;;;   X: Status
+    .proc iec_talk_second
+        tay
+        lda ZPKERNAL_STATUS
+        pha
+            lda ZPKERNAL_C3P0
+            pha
+                lda ZPKERNAL_BSOUR
+                pha
+                    lda ZPKERNAL_PCNTR_R2D2
+                    pha
+                        lda ZPKERNAL_BSOUR1_FIRT
+                        pha
+                            lda ZPKERNAL_CNTDN_COUNT
+                            pha
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/ROM
+                                stx CPU_PORT_DATA
+                                    tya
+                                    jsr KERNAL_TKSA
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+                                stx CPU_PORT_DATA
+                                ldx ZPKERNAL_STATUS
+                            pla
+                            sta ZPKERNAL_CNTDN_COUNT
+                        pla
+                        sta ZPKERNAL_BSOUR1_FIRT
+                    pla
+                    sta ZPKERNAL_PCNTR_R2D2
+                pla
+                sta ZPKERNAL_BSOUR
+            pla
+            sta ZPKERNAL_C3P0
+        pla
+        sta ZPKERNAL_STATUS
+        ;
+        rts
+    .endproc
+
+    ;;; summary: IEC receive byte
+    ;;; returns:
+    ;;;   A: byte received
+    ;;;   X: Status
+    .proc iec_byte_in
+        lda ZPKERNAL_STATUS
+        pha
+            lda ZPKERNAL_C3P0
+            pha
+                lda ZPKERNAL_BSOUR
+                pha
+                    lda ZPKERNAL_PCNTR_R2D2
+                    pha
+                        lda ZPKERNAL_BSOUR1_FIRT
+                        pha
+                            lda ZPKERNAL_CNTDN_COUNT
+                            pha
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/ROM
+                                stx CPU_PORT_DATA
+                                    jsr KERNAL_ACPTR            ; -> A
+                                    tay
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+                                stx CPU_PORT_DATA
+                                ldx ZPKERNAL_STATUS
+                            pla
+                            sta ZPKERNAL_CNTDN_COUNT
+                        pla
+                        sta ZPKERNAL_BSOUR1_FIRT
+                    pla
+                    sta ZPKERNAL_PCNTR_R2D2
+                pla
+                sta ZPKERNAL_BSOUR
+            pla
+            sta ZPKERNAL_C3P0
+        pla
+        sta ZPKERNAL_STATUS
+        ;
+        tya
+        ;
+        rts
+    .endproc
+
+    ;;; summary: IEC send byte
+    ;;; parameters:
+    ;;;   A: byte to send
+    ;;; returns:
+    ;;;   X: Status
+    .proc iec_byte_out
+        tay
+        lda ZPKERNAL_STATUS
+        pha
+            lda ZPKERNAL_C3P0
+            pha
+                lda ZPKERNAL_BSOUR
+                pha
+                    lda ZPKERNAL_PCNTR_R2D2
+                    pha
+                        lda ZPKERNAL_BSOUR1_FIRT
+                        pha
+                            lda ZPKERNAL_CNTDN_COUNT
+                            pha
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/ROM
+                                stx CPU_PORT_DATA
+                                    tya
+                                    jsr KERNAL_CIOUT
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+                                stx CPU_PORT_DATA
+                                ldx ZPKERNAL_STATUS
+                            pla
+                            sta ZPKERNAL_CNTDN_COUNT
+                        pla
+                        sta ZPKERNAL_BSOUR1_FIRT
+                    pla
+                    sta ZPKERNAL_PCNTR_R2D2
+                pla
+                sta ZPKERNAL_BSOUR
+            pla
+            sta ZPKERNAL_C3P0
+        pla
+        sta ZPKERNAL_STATUS
+        ;
+        rts
+    .endproc
+
+    ;;; summary: IEC untalk
+    ;;; returns:
+    ;;;   X: Status
+    .proc iec_untalk
+        lda ZPKERNAL_STATUS
+        pha
+            lda ZPKERNAL_C3P0
+            pha
+                lda ZPKERNAL_BSOUR
+                pha
+                    lda ZPKERNAL_PCNTR_R2D2
+                    pha
+                        lda ZPKERNAL_BSOUR1_FIRT
+                        pha
+                            lda ZPKERNAL_CNTDN_COUNT
+                            pha
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/ROM
+                                stx CPU_PORT_DATA
+                                    jsr KERNAL_UNTLK
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+                                stx CPU_PORT_DATA
+                                ldx ZPKERNAL_STATUS
+                            pla
+                            sta ZPKERNAL_CNTDN_COUNT
+                        pla
+                        sta ZPKERNAL_BSOUR1_FIRT
+                    pla
+                    sta ZPKERNAL_PCNTR_R2D2
+                pla
+                sta ZPKERNAL_BSOUR
+            pla
+            sta ZPKERNAL_C3P0
+        pla
+        sta ZPKERNAL_STATUS
+        ;
+        rts
+    .endproc
+
+    ;;; summary: IEC unlisten
+    ;;; returns:
+    ;;;   X: Status
+    .proc iec_unlisten
+        lda ZPKERNAL_STATUS
+        pha
+            lda ZPKERNAL_C3P0
+            pha
+                lda ZPKERNAL_BSOUR
+                pha
+                    lda ZPKERNAL_PCNTR_R2D2
+                    pha
+                        lda ZPKERNAL_BSOUR1_FIRT
+                        pha
+                            lda ZPKERNAL_CNTDN_COUNT
+                            pha
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/ROM
+                                stx CPU_PORT_DATA
+                                    jsr KERNAL_UNLSN
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+                                stx CPU_PORT_DATA
+                                ldx ZPKERNAL_STATUS
+                            pla
+                            sta ZPKERNAL_CNTDN_COUNT
+                        pla
+                        sta ZPKERNAL_BSOUR1_FIRT
+                    pla
+                    sta ZPKERNAL_PCNTR_R2D2
+                pla
+                sta ZPKERNAL_BSOUR
+            pla
+            sta ZPKERNAL_C3P0
+        pla
+        sta ZPKERNAL_STATUS
+        ;
+        rts
+    .endproc
+
+    ;;; summary: IEC send primary address for listen
+    ;;; parameters:
+    ;;;   A: Primary (device) address
+    ;;; returns:
+    ;;;   X: Status
+    .proc iec_listen
+        tay
+        lda ZPKERNAL_STATUS
+        pha
+            lda ZPKERNAL_C3P0
+            pha
+                lda ZPKERNAL_BSOUR
+                pha
+                    lda ZPKERNAL_PCNTR_R2D2
+                    pha
+                        lda ZPKERNAL_BSOUR1_FIRT
+                        pha
+                            lda ZPKERNAL_CNTDN_COUNT
+                            pha
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/ROM
+                                stx CPU_PORT_DATA
+                                    tya
+                                    jsr KERNAL_LISTEN
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+                                stx CPU_PORT_DATA
+                                ldx ZPKERNAL_STATUS
+                            pla
+                            sta ZPKERNAL_CNTDN_COUNT
+                        pla
+                        sta ZPKERNAL_BSOUR1_FIRT
+                    pla
+                    sta ZPKERNAL_PCNTR_R2D2
+                pla
+                sta ZPKERNAL_BSOUR
+            pla
+            sta ZPKERNAL_C3P0
+        pla
+        sta ZPKERNAL_STATUS
+        ;
+        rts
+    .endproc
+
+    ;;; summary: IEC send primary address for talking
+    ;;; parameters:
+    ;;;   A: Primary (device) address
+    ;;; returns:
+    ;;;   X: Status
+    .proc iec_talk
+        tay
+        lda ZPKERNAL_STATUS
+        pha
+            lda ZPKERNAL_C3P0
+            pha
+                lda ZPKERNAL_BSOUR
+                pha
+                    lda ZPKERNAL_PCNTR_R2D2
+                    pha
+                        lda ZPKERNAL_BSOUR1_FIRT
+                        pha
+                            lda ZPKERNAL_CNTDN_COUNT
+                            pha
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/IO/ROM
+                                stx CPU_PORT_DATA
+                                    tya
+                                    jsr KERNAL_TALK
+                                ldx # CPU_PORT_DATA_DEFAULT     ; Will be RAM/RAM/RAM
+                                stx CPU_PORT_DATA
+                                ldx ZPKERNAL_STATUS
+                            pla
+                            sta ZPKERNAL_CNTDN_COUNT
+                        pla
+                        sta ZPKERNAL_BSOUR1_FIRT
+                    pla
+                    sta ZPKERNAL_PCNTR_R2D2
+                pla
+                sta ZPKERNAL_BSOUR
+            pla
+            sta ZPKERNAL_C3P0
+        pla
+        sta ZPKERNAL_STATUS
+        ;
+        rts
+    .endproc
+
+;endregion

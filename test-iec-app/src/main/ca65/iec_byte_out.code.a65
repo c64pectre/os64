@@ -1,0 +1,54 @@
+;    test-iec-app: OS64 app test IEC.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+;;; summary: buffered output to serial bus
+;;; parameters:
+;;;   @A_BYTE : byte  Byte to output
+;;; return:
+;;;   P.C: CC=OK / CS=FAIL
+;;;   A: byte read from iec or else error code on fail
+.proc iec_byte_out
+    ;__begin_cedecl_frame
+        ; [FP  ] <== X = [FP] = [RSP]
+        ; [FP-1] A_BYTE
+        ;FRAME_DECLARE_1_LOCAL_VAR
+        ; [FP  ] <== X = [FP] = [RSP]
+        ; [FP-1] L_COUNT
+        ; [FP-2] A_BYTE
+        ;L_COUNT = < -1
+        ;A_BYTE = < -2
+        ;
+        bit SELF_C3P0                   ;buffered char?
+        if_pl_then
+            ; no
+            sec             
+            ror SELF_C3P0               ;set buffered char flag
+            bne _end                    ;branch always
+        else
+            ;yes send last byte
+            pha
+                jsr isour
+            pla
+        end
+        ;
+        ;lda_p A_BYTE
+        sta SELF_BSOUR                  ;buffer current char
+        clc                             ;OK
+    ;__end_cedecl_frame
+    rts
+.endproc

@@ -18,6 +18,12 @@
 
 ;region Macros
 
+.macro ldxywv W
+    ldx # < (W)
+    ldy # > (W)
+.endmacro
+
+
 .macro PUTS_VW a_string
     ldx # < (a_string)
     ldy # > (a_string)
@@ -26,10 +32,12 @@
 
 ;endregion
 
+.export LOAD_TEST_APP_AT            := $7000
+.export LOAD_SYSTEM_DRV_AT          := $9000
+.export LOAD_IRQ_BRK_NMI_DRV_AT     := $9800
 .export LOAD_KERNAL_MOD_AT          := $C200
 .export LOAD_SCREEN_MOD_AT          := $C400
-.export LOAD_TEST_SCREEN_APP_AT     := $C600
-.export LOAD_IRQ_BRK_NMI_HANDLER_AT := $CE00
+.export PAGE_HEAP_AT                := $C800
 .export LOAD_SPRITES_AT             := $F200
 .export LOAD_CHARSET_AT             := $F800
 
@@ -39,23 +47,28 @@
     try
         PUTS_VW RESOURCE_STRING_MESSAGE_LOADING
         ;
-        jsr load_charset
+        ;jsr load_charset
+        ;bcs _catch
+        ;
+        ;jsr load_sprites
+        ;bcs _catch
+        ;
+        ;jsr load_system_drv
+        ;bcs _catch
+        ;
+        ;jsr load_brk_irq_nmi_drv
+        ;bcs _catch
+        ;
+        ;jsr load_kernal_mod
+        ;bcs _catch
+        ;
+        ;jsr load_screen_mod
+        ;bcs _catch
+        ;
+        jsr load_test_app
         bcs _catch
         ;
-        jsr load_sprites
-        bcs _catch
-        ;
-        jsr load_brk_handler
-        bcs _catch
-        ;
-        jsr load_kernal_mod
-        bcs _catch
-        ;
-        jsr load_screen_mod
-        bcs _catch
-        ;
-        jsr load_test_screen_app
-        bcs _catch
+        jsr LOAD_TEST_APP_AT
         ;
         bcc _finally
     catch
@@ -67,7 +80,7 @@
     ;
     ; Because we've been boot loaded, there is no context to rts to.
 
-    jsr bootstrap
+    ;jsr bootstrap
     ;
     jmp [BVECTORS_IMAIN]
     ;
@@ -90,8 +103,7 @@
 ;;; summmary: Load U64 charset
 ;;; return: CC=OK , CS=FAIL
 .proc load_charset
-    ldx # < RESOURCE_STRING_CHARSET_FILENAME
-    ldy # > RESOURCE_STRING_CHARSET_FILENAME
+    ldxywv RESOURCE_STRING_CHARSET_FILENAME
     ldbxv LOAD_CHARSET_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
@@ -101,22 +113,28 @@
 ;;; summmary: Load sprites
 ;;; return: CC=OK , CS=FAIL
 .proc load_sprites
-    ldx # < RESOURCE_STRING_SPRITES_FILENAME
-    ldy # > RESOURCE_STRING_SPRITES_FILENAME
+    ldxywv RESOURCE_STRING_SPRITES_FILENAME
     ldbxv LOAD_SPRITES_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
 .endproc
 
+.proc load_system_drv
+    ldxywv RESOURCE_STRING_SYSTEM_DRV_FILENAME
+    ldbxv LOAD_SYSTEM_DRV_AT
+    jsr load_prg_at
+    ; CC=OK/CS=FAIL
+
+    rts
+.endproc
+
 ;;; summmary: Load BRK handler
 ;;; return: CC=OK , CS=FAIL
-.proc load_brk_handler
-    ldx # < RESOURCE_STRING_BRK_HANDLER_FILENAME
-    ldy # > RESOURCE_STRING_BRK_HANDLER_FILENAME
-    ldbxv LOAD_IRQ_BRK_NMI_HANDLER_AT
+.proc load_brk_irq_nmi_drv
+    ldxywv RESOURCE_STRING_IRQ_BRK_NMI_HANDLER_FILENAME
+    ldbxv LOAD_IRQ_BRK_NMI_DRV_AT
     jsr load_prg_at
-    clc
     ; CC=OK/CS=FAIL
     rts
 .endproc
@@ -124,8 +142,7 @@
 ;;; summmary: Load kernal mod
 ;;; return: CC=OK , CS=FAIL
 .proc load_kernal_mod
-    ldx # < RESOURCE_STRING_KERNAL_MOD_FILENAME
-    ldy # > RESOURCE_STRING_KERNAL_MOD_FILENAME
+    ldxywv RESOURCE_STRING_KERNAL_MOD_FILENAME
     ldbxv LOAD_KERNAL_MOD_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
@@ -135,28 +152,94 @@
 ;;; summmary: Load screen mod
 ;;; return: CC=OK , CS=FAIL
 .proc load_screen_mod
-    ldx # < RESOURCE_STRING_SCREEN_MOD_FILENAME
-    ldy # > RESOURCE_STRING_SCREEN_MOD_FILENAME
+    ldxywv RESOURCE_STRING_SCREEN_MOD_FILENAME
     ldbxv LOAD_SCREEN_MOD_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
 .endproc
 
-;;; summmary: Load test screen app
+;;; summmary: Load test app
 ;;; return: CC=OK , CS=FAIL
-.proc load_test_screen_app
-    ldx # < RESOURCE_STRING_TEST_SCREEN_APP_FILENAME
-    ldy # > RESOURCE_STRING_TEST_SCREEN_APP_FILENAME
-    ldbxv LOAD_TEST_SCREEN_APP_AT
+.proc load_test_app
+    ldxywv RESOURCE_STRING_TEST_APP_FILENAME
+    ldbxv LOAD_TEST_APP_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
 .endproc
 
+PAGE_HEAP_CAPACITY = 6
+.export PAGE_HEAP_BASE := PAGE_HEAP_AT
+
+MOD_00_KERNAL__ID   = $00
+MOD_00_KERNAL__PAGE = > LOAD_KERNAL_MOD_AT
+MOD_00_KERNAL__SIZE = 2
+
+MOD_01_SCREEN__ID = $01
+MOD_00_SCREEN__PAGE = > LOAD_SCREEN_MOD_AT
+MOD_00_SCREEN__SIZE = 2
+
+MOD_00_KERNAL__MODULE_MAP__CAPACITY = 16
+.export MOD_00_KERNAL__MODULE_MAP__ENTRY_PAGE := $C000  ; $C000-$C00F
+.export MOD_00_KERNAL__MODULE_MAP__ENTRY_SIZE := $C010  ; $C010-$C01F
+
+MOD_00_KERNAL__PAGE_HEAP_MAP__CAPACITY = 16
+.export MOD_00_KERNAL__PAGE_HEAP_MAP__ENTRY_PAGE := $C020  ; $C020-$C02F
+.export MOD_00_KERNAL__PAGE_HEAP_MAP__ENTRY_SIZE := $C030  ; $C030-$C03F
+
+.export MOD_00_KERNAL__PAGE_HEAP__FREE_HANDLE_LIST__HEAD := MOD_00_KERNAL__PAGE_HEAP_MAP__ENTRY_PAGE + 0
+.export MOD_00_KERNAL__PAGE_HEAP__FREE_PAGE_LIST__HEAD   := MOD_00_KERNAL__PAGE_HEAP_MAP__ENTRY_SIZE + 0
+
 .proc bootstrap
+    ;
+    ; Initialize module map
+    from
+        ldx # MOD_00_KERNAL__MODULE_MAP__CAPACITY
+    loop
+        lda # 0
+        sta MOD_00_KERNAL__MODULE_MAP__ENTRY_PAGE - 1 , x
+        sta MOD_00_KERNAL__MODULE_MAP__ENTRY_SIZE - 1 , x
+    next
+        dex
+        bne _loop
+    end
+    ;
+    ; Initialize page heap
+    from
+        ldx # MOD_00_KERNAL__PAGE_HEAP_MAP__CAPACITY
+    loop
+        lda # 0
+        sta MOD_00_KERNAL__PAGE_HEAP_MAP__ENTRY_SIZE - 1 , x
+
+        dex
+        txa
+        sta MOD_00_KERNAL__PAGE_HEAP_MAP__ENTRY_PAGE - 1 , x
+    next
+        bne _loop
+    end
+    ;
+    lda # 0
+    sta MOD_00_KERNAL__PAGE_HEAP_MAP__ENTRY_PAGE + MOD_00_KERNAL__PAGE_HEAP_MAP__CAPACITY - 1
+    ;
+    lda # > PAGE_HEAP_BASE
+    sta MOD_00_KERNAL__PAGE_HEAP__FREE_PAGE_LIST__HEAD
+    ;
+    ; Kernal
+    ldx # MOD_00_KERNAL__ID
+    lda # MOD_00_KERNAL__PAGE
+    sta MOD_00_KERNAL__MODULE_MAP__ENTRY_PAGE, x
+    lda # MOD_00_KERNAL__SIZE
+    sta MOD_00_KERNAL__MODULE_MAP__ENTRY_SIZE , x
+    ; Screen
+    ldx # MOD_01_SCREEN__ID
+    lda # MOD_00_SCREEN__PAGE
+    sta MOD_00_KERNAL__MODULE_MAP__ENTRY_PAGE, x
+    lda # MOD_00_SCREEN__SIZE
+    sta MOD_00_KERNAL__MODULE_MAP__ENTRY_SIZE , x
+    ;
     ; Wire in brk, irq, nmi handlers
-    jsr LOAD_IRQ_BRK_NMI_HANDLER_AT
+    jsr irq_brk_nmi_drv_init
     ;
     rts
 .endproc
