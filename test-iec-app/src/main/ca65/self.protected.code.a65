@@ -22,10 +22,46 @@
 
 ;endregion
 
+;;; summary: Set clock line high (inverted)
+;;; changed: A
+.proc clkhi
+    lda CIA_2_PRA
+    and # CIA_2_PRA_W_SERIAL_INV_CLOCK_OUT_CLR              ; $ff-$10
+    sta CIA_2_PRA
+    rts
+.endproc
+
+;;; summary: Set clock line low  (inverted)
+;;; changed: A, P.Z=0
+.proc clklo
+    lda CIA_2_PRA
+    ora # CIA_2_PRA_W_SERIAL_INV_CLOCK_OUT_SET              ; $10
+    sta CIA_2_PRA
+    rts
+.endproc
+
+;;; summary: set data line high (inverted)
+;;; changed: A
+.proc datahi
+    lda CIA_2_PRA
+    and # CIA_2_PRA_W_SERIAL_INV_DATA_OUT_CLR               ; $ff-$20
+    sta CIA_2_PRA
+    rts
+.endproc
+
+;;; summary: Set data line low  (inverted)
+;;; changed: A, P.Z=0
+.proc datalo
+    lda CIA_2_PRA
+    ora # CIA_2_PRA_W_SERIAL_INV_DATA_OUT_SET               ; $20
+    sta CIA_2_PRA
+    rts
+.endproc
+
 ;;; summary: Debounce pia
 ;;; return:
-;;;   P.C: data in
-;;;   P.N: clock in
+;;;   C: data in
+;;;   N: clock in
 ;;; changed: A
 .proc debpia
     from_loop_next
@@ -40,15 +76,15 @@
 .endproc
 
 ;;; summary: Release ATN, delay and then release clock and data.
-;;; changed: A, N, Z
+;;; changed: A
 .proc dlabye
-    jsr scatn                           ;release all lines
-    jsr dladlh                          ;delay approx 60 us
+    jsr scatn
+    jsr dladlh
     rts
 .endproc
 
 ;;; summary: Delay approx 60 us end then set clock and data high
-;;; changed: A, N, Z
+;;; changed: A
 .proc dladlh
     txa
         from
@@ -63,62 +99,25 @@
     rts
 .endproc
 
-;;; summary: Set clock line high (inverted)
-;;; changed: A, N, Z
-.proc clkhi
-    lda CIA_2_PRA
-    and # CIA_2_PRA_W_SERIAL_INV_CLOCK_OUT_CLR              ; $ff-$10
-    sta CIA_2_PRA
-    rts
-.endproc
-
-;;; summary: Set clock line low  (inverted)
-;;; changed: A, N, Z=0
-.proc clklo
-    lda CIA_2_PRA
-    ora # CIA_2_PRA_W_SERIAL_INV_CLOCK_OUT_SET              ; $10
-    sta CIA_2_PRA
-    rts
-.endproc
-
-;;; summary: set data line high (inverted)
-;;; changed: A, N, Z
-.proc datahi
-    lda CIA_2_PRA
-    and # CIA_2_PRA_W_SERIAL_INV_DATA_OUT_CLR               ; $ff-$20
-    sta CIA_2_PRA
-    rts
-.endproc
-
-;;; summary: Set data line low  (inverted)
-;;; changed: A, N, Z=0
-.proc datalo
-    lda CIA_2_PRA
-    ora # CIA_2_PRA_W_SERIAL_INV_DATA_OUT_SET               ; $20
-    sta CIA_2_PRA
-    rts
-.endproc
-
-;;; summary: isour
+;;; summary: Send byte at SELF_BSOUR
 ;;; return:
-;;;   P.C = 0
-;;;   P.I = 0
+;;;   P.C    0=CC=OK/1=CS=FAIL
+;;;   P.I=0  Interrupts off
+;;;   A      Error code on FAIL
+;;; changed: A, Y
 .proc isour
-    ;A_PA = < -2
-    ;L_COUNT = < -1
-    ;
     try
-        sei                             ;no irq's allowed
+        sei
         ;
-        jsr datahi                      ;make sure data is released
-        jsr debpia                      ;data should be low
+        jsr datahi                                          ;make sure data is released
+        jsr debpia                                          ;data should be low
         if_cs_then
             lda # KERNAL_IO_ERROR_DEVICE_NOT_PRESENT
-            bcs _catch                  ;bra
+            bcs _catch                                      ;bra
         else_end
         ;
-        jsr clkhi                       ;clock line high
-        bit SELF_R2D2                   ;eoi flag test
+        jsr clkhi                                           ;clock line high
+        bit SELF_R2D2                                       ;eoi flag test
         if_mi_then
             ; Yes EOI: do the eoi
             ; wait for data to go high
@@ -133,6 +132,7 @@
                 jsr debpia      
                 bcs _loop
             end
+            ; check P.C=0
         else_end
         ;
         ;wait for data high
@@ -141,31 +141,28 @@
         next
             bcc _loop
         end
+        ; check P.C=1
         ;
-        jsr clklo                       ;set clock low
+        jsr clklo                                           ;set clock low
+        ; check P.Z=0
         ;
         ; Send data
         from
             ;ldp_vb L_COUNT, BYTE_BIT_COUNT
-            lda # BYTE_BIT_COUNT
-            sta L_COUNT
+            ldy # BYTE_BIT_COUNT
+            ;sta L_COUNT
         loop
-            ;debounce the bus
-            from_loop_next
-                lda CIA_2_PRA                   
-                cmp CIA_2_PRA
-                bne _loop
-            end
-
-            asl                         ;set the flags
+            jsr debpia                                      ;debounce bus and shift data bit into C and clock into N
+            ; Data must be hi
             if_cc_then
                 lda # KERNAL_IO_ERROR_FRAMING
-                bne _catch              ; bra
+                bne _catch                                  ;bra
             else_end
             ;
-            ror SELF_BSOUR              ;next bit into carry
+            ror SELF_BSOUR                                  ;next bit into carry
             if_cc_then
                 jsr datalo
+                ; check P.Z=0
                 bne _end                ;bra
             else
                 jsr datahi
@@ -182,7 +179,8 @@
             sta CIA_2_PRA
         next
             ;dec_p L_COUNT
-            dec L_COUNT
+            ;dec L_COUNT
+            dey
             bne _loop
         end
 
@@ -208,9 +206,11 @@
         cli                             ; let irq's continue
         bcc _finally                    ; bra
     catch
-        jsr udst
+        ;jsr udst
+        tay
         cli                             ; irq's were off...turn on
         jsr dlabye
+        tya
         sec
     finally_end
     ;
@@ -226,80 +226,18 @@
     jsr clklo
     jsr datahi
     jsr w1ms
-    jsr isour                           ; Does cli
+    jsr isour                                               ; Does cli
     ; ensure P.I = 0
     rts
 .endproc
 
-;;; summary: Disable rs232. Need to enable in user code.
-;;; changed: P.Z=0 P.N=0
-.proc rsp232
-    pha                                                     ;TODO kan weg
-        lda # CIA_ICR_FLAG_DISABLE
-        sta CIA_2_ICR
-    pla                                                     ;TODO kan weg
-    ;
-    rts
-.endproc
-
-;;; summary: Release attention
-;;; changed: A, CIA_2_PRA.W_SERIAL_INV_ATN_OUT=0
-.proc scatn
-    lda CIA_2_PRA
-    and # CIA_2_PRA_W_SERIAL_INV_ATN_OUT_CLR                ; $ff-$08=$F7=%11110111
-    sta CIA_2_PRA
-    rts
-.endproc
-
-;;; summary: Delay 1ms using loop
-;;; changed: A
-.proc w1ms
-    txa
-        from
-            ldx # 200-16                ;1000us-(1000/500*8=#40us holds)
-        loop_next
-            dex                         ;5us loop
-            bne _loop
-        end
-    tax
-    rts
-.endproc
-
-;;; summary: IEC talk or listen
-;;; parameters:
-;;;   @A_PA     Primary (file/device) address
-;;; returns:
-;;;   P.C: CC=OK, CS=FAIL
-;;;   A: Error code on fail (see KERNAL_IO_ERROR_*)
-;;; changed: A SELF_C3P0 SELF_BSOUR SELF_R2D2
-.proc talk_or_listen
-    ; [FP  ] <== X = [FP] = [RSP]
-    ; [FP-1] A_PA
-    ;FRAME_DECLARE_1_LOCAL_VAR
-    ; [FP  ] <== X = [FP] = [RSP]
-    ; [FP-1] L_COUNT
-    ; [FP-2] A_PA
-    ;L_COUNT = < -1
-    ;A_PA = < -2
-    jsr rsp232                          ; protect self from rs232 nmi's
-    jsr list1
-    rts
-.endproc
-
-.proc untalk_or_unlisten
-    jsr list1                           ;send it
-    jsr dlabye
-    rts
-.endproc
-
 ;;; summary: list1
+;;; parameters:
+;;;   A  Byte to send (firstly, any buffered byte is send)
 ;;; return:
 ;;;   P.I=0
 ;;;   P.C: 0=CC=OK / 1=CS=FAIL
 .proc list1
-    ;A_PA = < -2
-    ;L_COUNT = < -1
-    ;
     try
         pha
             bit SELF_C3P0                                   ; character left in buf?
@@ -336,14 +274,69 @@
         ;bcs _catch
         ;bcc _finally
     catch_finally_end
-    ;
     ; check P.I=0
     ; CC=OK / CS=FAIL
     rts
 .endproc
 
-.proc udst
-    ora L_STATUS
-    sta L_STATUS
+;;; summary: Disable rs232. Need to enable in user code.
+;;; changed: P.Z=0 P.N=0
+.proc rsp232
+    ;pha                                                     ;TODO kan weg
+        lda # CIA_ICR_FLAG_DISABLE
+        sta CIA_2_ICR
+    ;pla                                                     ;TODO kan weg
+    ;
+    rts
+.endproc
+
+;;; summary: Release attention
+;;; changed: A, CIA_2_PRA.W_SERIAL_INV_ATN_OUT=0
+.proc scatn
+    lda CIA_2_PRA
+    and # CIA_2_PRA_W_SERIAL_INV_ATN_OUT_CLR                ; $ff-$08=$F7=%11110111
+    sta CIA_2_PRA
+    rts
+.endproc
+
+;;; summary: IEC talk or listen
+;;; parameters:
+;;;   A     IEC command to ora A_PA with
+;;;   A_PA  Primary (file/device) address
+;;; returns:
+;;;   P.C: CC=OK, CS=FAIL
+;;;   A: Error code on fail
+;;; changed: A SELF_C3P0 SELF_BSOUR SELF_R2D2
+.proc talk_or_listen
+    ;[FP  ] <== X = [FP] = [RSP]
+    ;[FP-1] A_PA
+    A_PA = < -1
+    ;
+    ora_p A_PA
+    sta_p A_PA
+    ;
+    jsr rsp232                          ; protect self from rs232 nmi's
+    lda_p A_PA
+    jsr list1
+    rts
+.endproc
+
+.proc untalk_or_unlisten
+    jsr list1                                               ;send it
+    jsr dlabye
+    rts
+.endproc
+
+;;; summary: Delay 1ms using loop
+;;; changed: A
+.proc w1ms
+    txa
+        from
+            ldx # 200-16                ;1000us-(1000/500*8=#40us holds)
+        loop_next
+            dex                         ;5us loop
+            bne _loop
+        end
+    tax
     rts
 .endproc

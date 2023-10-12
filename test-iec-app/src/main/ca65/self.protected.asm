@@ -32,9 +32,9 @@
 .export SELF_BSOUR
 .export SELF_R2D2
 
-.export L_BSOUR1
-.export L_COUNT
-.export L_STATUS
+;.export L_BSOUR1
+;.export L_COUNT
+;.export L_STATUS
 
 .export clkhi
 .export clklo
@@ -48,5 +48,5 @@
 .export rsp232
 .export scatn
 .export talk_or_listen
-.export udst
+;.export udst
 .export untalk_or_unlisten

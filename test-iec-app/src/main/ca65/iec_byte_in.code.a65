@@ -27,58 +27,51 @@
 ;;; return:
 ;;;   P.C: CC=OK / CS=FAIL
 ;;;   AL byte received if OK
-;;;   AH error code on FAIL
-;;; changed: A
-;;; notes: X and Y unchanged!
+;;;   AH error code on FAIL (see KERNAL_IO_ERROR_*)
+;;; changed: A, Y
 .proc iec_byte_in
-    ;__begin_cedecl_frame
-        ; [FP  ] <== X = [FP] = [RSP]
-        ;FRAME_DECLARE_3_LOCAL_VAR_INIT_0
-        ; [FP  ] <== X = [FP] = [RSP]
-        ; [FP-1][$00] @L_BSOUR1
-        ; [FP-2][$00] @L_COUNT  ;set eoi/error flag
-        ; [FP-3][$00] @L_STATUS
-        ;L_BSOUR1 = < -1
-        ;L_COUNT = < -2
-        ;L_STATUS = < -3
-        ; check A=0
-        ; check X=[FP]=[RSP]
+    __begin_cedecl_frame
         try
             from outer
                 sei
-                lda # 0                                 ;set eoi/error flag
-                sta L_COUNT
-                jsr clkhi                               ;make sure clock line is released
+                ; Because we rotate all 8 bits into result character read in AL, wo do not need to initialize it.
+                lda # 0                                     ;set eoi/error flag
+                sta AH                                      ;Error code, if any
                 ;
-                ;wait for clock high
+                jsr clkhi                                   ;make sure clock line is released
+                ;
+                ; Wait for clock high
                 from_loop_next
                     jsr debpia
                     bpl _loop
                 end
+                ;
+                ldy # 0                                     ;Retry counter
             loop ;outer
                 from inner
-                    lda # $01                           ;set timer 2 for 256us
+                    lda # $01                               ;set timer 2 for 256us
                     sta CIA_1_TB_HI
                     lda # CIA_CRB_TIMER_B_START_STOP_START | CIA_CRB_TIMER_B_UNDERFLOW_RESTART_OFF | CIA_CRB_LOAD_LATCH_INTO_TIMER_ONCE_ON
-                                                        ; (timrb=$19)
+                                                            ; (timrb=$19)
                     sta CIA_1_CRB
-                    jsr datahi                          ;data line high (makes timming more like vic-20
-                    lda CIA_1_ICR                       ;clear the timer flags
+                    jsr datahi                              ;data line high (makes timming more like vic-20
+                    lda CIA_1_ICR                           ;clear the timer flags
                 loop ;inner
                     lda CIA_1_ICR                       ;Flags will be cleared after reading the register!
                     and # CIA_ICR_TIMER_B_MASK          ;$02  check the timer
                     if_ne_then
-                        lda L_COUNT                     ;check for error (twice thru timeouts)
+                        tya                             ;check for error (twice thru timeouts)
                         if_ne_then
                             lda # KERNAL_IO_ERROR_READ_TIMEOUT
                             jmp _catch
                         else
-                            ; check EQ
+                            ;check EQ
                             ;timer ran out: mark EOI
                             jsr datalo                  ;data line low
                             jsr clkhi                   ;delay and then set datahi (fix for 40us c64)
                             lda # KERNAL_IO_EOI
-                            jsr udst
+                            ora AH
+                            sta AH
                             ; check NE
                             bne inner::_end             ;break bra
                         end
@@ -89,17 +82,15 @@
                     bpl outer::_end;                    ;yes..... break break bra
                 end ;inner
             next ;outer
-                ; check L_COUNT = 0
-                inc L_COUNT                             ;go around again for error check on eoi
-                ; check L_COUNT = 1
-                bne _loop                               ;eoiacp bra?
+                ; check Y=0
+                iny                                         ;go around again for error check on eoi
+                ; check Y=1
+                bne _loop                                   ;bra?
             end ;outer
-            ;===============================================================
             ;
             ; do the byte transfer
             from
-                lda # BYTE_BIT_COUNT                    ;set up counter
-                sta L_COUNT
+                ldy # BYTE_BIT_COUNT
             acp03:
             loop
                 from_loop
@@ -109,13 +100,12 @@
                         bne _loop
                     end
                 next
-                    asl                                 ;shift data into carry
-                    bpl _loop                           ;clock still low
+                    asl                                     ;shift data into carry
+                    bpl _loop                               ;clock still low
                 end
                 ;
-                ror L_BSOUR1                            ;rotate data bit in
+                ror AL                                      ;rotate data bit in
                 ;
-                acp03a:
                 from_loop
                     from_loop_next
                         lda CIA_2_PRA                       ;wait for clock low
@@ -127,31 +117,33 @@
                     bmi _loop
                 end
             next
-                dec L_COUNT
-                bne _loop                                   ;more bits
+                dey
+                bne _loop
             end
+            ; check Y=0
             ;
             ; Exit
             jsr datalo
             ;
             ;check for eoi
-            lda L_STATUS
+            lda AH
             and # KERNAL_IO_EOI
             if_ne_then
                 ;no
                 jsr dladlh
             else_end
             ;
-            lda L_BSOUR1
+            ; Result in AL
             cli
             clc                                             ;OK
             bcc _finally                                    ;bra
         catch
-            jsr udst
+            ; A contains Error code
+            ora AH
+            sta AH
             cli
-            jsr dlabye
             sec                                             ;FAIL
         finally_end
-    ;__end_cedecl_frame
+    __end_cedecl_frame
     rts
 .endproc

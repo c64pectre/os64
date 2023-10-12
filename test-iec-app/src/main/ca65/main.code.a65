@@ -23,11 +23,11 @@
         sta SELF_C3P0
         sta SELF_BSOUR
         sta SELF_R2D2
-        sta L_BSOUR1
-        sta L_COUNT
-        sta L_STATUS
+        ;sta L_BSOUR1
+        ;sta L_COUNT
+        ;sta L_STATUS
         ;
-        ; Load /8/test-iec.app at $7800 using our own IEC routines
+        ; Load 8:test-iec.app at $7800 using our own IEC routines
         ;
         BEGIN_PUSH
             phpvw $7800

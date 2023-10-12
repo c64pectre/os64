@@ -18,14 +18,14 @@
 
 ;summary: send untalk command on serial bus
 .proc iec_untalk
-    ;__begin_cedecl_frame
+    __begin_cedecl_frame
         sei
-            jsr clklo
-            lda CIA_2_PRA                                   ;pull atn
-            ora # CIA_2_PRA_W_SERIAL_INV_ATN_OUT_SET        ; $08
-            sta CIA_2_PRA
-            lda # SERIAL_COMMAND_UNTALK                     ;untalk command
-            jsr untalk_or_unlisten
-    ;__end_cedecl_frame
+        jsr clklo
+        lda CIA_2_PRA                                   ;pull atn
+        ora # CIA_2_PRA_W_SERIAL_INV_ATN_OUT_SET
+        sta CIA_2_PRA
+        lda # SERIAL_COMMAND_UNTALK                     ;untalk command
+        jsr untalk_or_unlisten                          ;does cli
+    __end_cedecl_frame
     rts
 .endproc

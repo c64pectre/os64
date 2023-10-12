@@ -23,11 +23,12 @@
 ;;;   P.C: CC=OK / CS=FAIL
 ;;;   X: Error code on fail
 .proc iec_talk_second
-    ;__begin_cedecl_frame
-        ;A_SA = < -1
+    __begin_cedecl_frame
+        A_SA = < -1
         ;
+        lda_p A_SA
         sta SELF_BSOUR                                      ;buffer character
-        jsr isoura      ;send second addr
+        jsr isoura                                          ;send second addr
         ;
         ;shift over to listener
         sei
@@ -39,8 +40,9 @@
                 bmi _loop
             end
         cli
-        ;clc   ; not in kernal                                              ;OK
+        ;check CC
+        ;clc                                                ; OK (not in kernal)
         ;
-    ;__end_cedecl_frame
+    __end_cedecl_frame
     rts
 .endproc

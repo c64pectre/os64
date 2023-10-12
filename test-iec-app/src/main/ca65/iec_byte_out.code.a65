@@ -18,20 +18,13 @@
 
 ;;; summary: buffered output to serial bus
 ;;; parameters:
-;;;   @A_BYTE : byte  Byte to output
+;;;   A_BYTE  Byte to output
 ;;; return:
-;;;   P.C: CC=OK / CS=FAIL
-;;;   A: byte read from iec or else error code on fail
+;;;   P.C  CC=OK / CS=FAIL
+;;;   A    Error code on fail (see KERNAL_IO_ERROR_*)
 .proc iec_byte_out
-    ;__begin_cedecl_frame
-        ; [FP  ] <== X = [FP] = [RSP]
-        ; [FP-1] A_BYTE
-        ;FRAME_DECLARE_1_LOCAL_VAR
-        ; [FP  ] <== X = [FP] = [RSP]
-        ; [FP-1] L_COUNT
-        ; [FP-2] A_BYTE
-        ;L_COUNT = < -1
-        ;A_BYTE = < -2
+    __begin_cedecl_frame
+        A_BYTE = < -1
         ;
         bit SELF_C3P0                   ;buffered char?
         if_pl_then
@@ -41,14 +34,14 @@
             bne _end                    ;branch always
         else
             ;yes send last byte
-            pha
+            ;pha
                 jsr isour
-            pla
+            ;pla
         end
         ;
-        ;lda_p A_BYTE
+        lda_p A_BYTE
         sta SELF_BSOUR                  ;buffer current char
         clc                             ;OK
-    ;__end_cedecl_frame
+    __end_cedecl_frame
     rts
 .endproc

@@ -17,9 +17,9 @@
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
 .proc iec_unlisten
-    ;__begin_cedecl_frame
+    __begin_cedecl_frame
         lda # SERIAL_COMMAND_UNLISTEN
         jsr untalk_or_unlisten
-    ;__end_cedecl_frame
+    __end_cedecl_frame
     rts
 .endproc

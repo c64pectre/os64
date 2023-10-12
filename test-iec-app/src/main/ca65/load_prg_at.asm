@@ -32,8 +32,6 @@
 .import iec_byte_in
 .import iec_byte_out
 
-.import L_STATUS
-
 .segment "CODE"
 .include "load_prg_at.code.a65"
 

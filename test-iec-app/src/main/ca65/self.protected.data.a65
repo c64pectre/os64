@@ -19,6 +19,3 @@
 SELF_C3P0:  .res 1                      ; $94 ieee buffered char flag
 SELF_BSOUR: .res 1                      ; $95 char buffer for ieee
 SELF_R2D2:  .res 1                      ; $A3
-L_BSOUR1:   .res 1                      ; $A4
-L_COUNT:    .res 1                      ; $A5
-L_STATUS:   .res 1                      ; $90

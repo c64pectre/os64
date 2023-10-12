@@ -31,11 +31,6 @@
 .import debpia
 .import dlabye
 .import dladlh
-.import udst
-
-.import L_BSOUR1
-.import L_COUNT
-.import L_STATUS
 
 .segment "CODE"
 .include "iec_byte_in.code.a65"

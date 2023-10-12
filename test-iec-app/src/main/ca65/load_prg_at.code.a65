@@ -18,12 +18,13 @@
 
 ;;; summary: Load PRG file
 ;;; parameters:
-;;;   A_ADDRESS
-;;;   A_FILENAME
 ;;;   A_PA
+;;;   A_FILENAME
+;;;   A_ADDRESS
 ;;; return:
 ;;;   P.C: 0=CC=OK / 1=CS=FAIL
-;;; changed: A, X, Y, CX, BX
+;;;   A: error code on FAIL
+;;; changed: A, AX, BL
 .proc load_prg_at
     __begin_cedecl_frame
         A_PA = < -1
@@ -31,88 +32,97 @@
         A_ADDRESS = < -5
         ;
         try
-            RESTORE_FP
-            ldbxp A_ADDRESS
+            ;RESTORE_FP
+            ;ldbxp A_ADDRESS
             lda_p A_PA
             ;BEGIN_PUSH
-            ;php_a
-            ;END_PUSH
-            jsr iec_listen
-            bcs _catch
+            php_a
+            END_PUSH
+            jsr iec_listen                                  ;A+ Y+
+            if_cs_then
+                jmp _catch
+            else_end
             ;
             ;BEGIN_PUSH
-            ;php_vb DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_OPEN
-            lda # DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_OPEN
-            ;END_PUSH
-            jsr iec_listen_second
+            php_vb DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_OPEN
+            ;lda # DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_OPEN
+            END_PUSH
+            jsr iec_listen_second                           ;A+ Y+
             bcs _catch
-            ;
             ;
             ; Send file name
             from
-                RESTORE_FP
-                ldcxp A_FILENAME
-                ldy # 0
+                ;RESTORE_FP
+                ;ldcxp A_FILENAME
+                ;ldy # 0
             loop
-                lda [CX] , Y
+                ;RESTORE_FP
+                lda [A_FILENAME, X]
                 beq _end
-                jsr iec_byte_out
+                php_a
+                END_PUSH
+                jsr iec_byte_out                            ;A+ Y+
             next
-                iny
-                bne _loop
+                incpw A_FILENAME
+                bne _loop                                   ;bra
             end
             ;
-            jsr iec_unlisten
+            jsr iec_unlisten                                ;A+ Y+
             ;
             ;lda ZPKERNAL_FA
-            RESTORE_FP
+            ;RESTORE_FP
             lda_p A_PA
             ; A=8
-            jsr iec_talk                                        ; Establish channel
+            php_a
+            END_PUSH
+            jsr iec_talk                                    ;A+ Y+ Establish channel
             bcs _catch
             ;
-            lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_SECOND)  ; sa
-            jsr iec_talk_second                                 ; Tell it to load
+            php_vb (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_SECOND)  ; sa
+            END_PUSH
+            jsr iec_talk_second                             ;A+ Y+ Tell it to load
             bcs _catch
             ;
             ; Skip load address (2 bytes)
-            jsr iec_byte_in
-            lda L_STATUS
+            jsr iec_byte_in                                 ;A+ Y+ AL+ AH+
+            lda AH
             bne _catch
-            jsr iec_byte_in
-            lda L_STATUS
+            jsr iec_byte_in                                 ;A+ Y+ AL+ AH+
+            lda AH
             bne _catch
             ;
             from
-                ldy # 0
+                RESTORE_FP
             loop
-                jsr iec_byte_in
-                tax
-                lda L_STATUS
+                jsr iec_byte_in                             ;A+ Y+ AL+ AH+
+                lda AH
                 and # (KERNAL_IO_ERROR_READ_TIMEOUT | KERNAL_IO_ERROR_DEVICE_NOT_PRESENT)
                 bne _catch
-                txa
-                sta [BX] , Y
-                lda L_STATUS
+                lda AL
+                sta [A_ADDRESS, X]
+                lda AH
                 and # KERNAL_IO_EOI
                 bne _end                                    ; break because EOI
             next
-                inc_bx
+                incpw A_ADDRESS
                 bne _loop                                   ; bra because: we should never load wraping $FFFF to $0000
             end
             ;
             ;jsr KERNAL_UNTLK ; Close channel not needed on EOI says https://www.pagetable.com/?p=1031
             ;
             ; Close file
-            RESTORE_FP
+            ;RESTORE_FP
             lda_p A_PA
-            jsr iec_listen
+            php_a
+            END_PUSH
+            jsr iec_listen                                  ;A+ Y+
             ;
-            lda # (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_CLOSE)
-            jsr iec_listen_second
-            jsr iec_unlisten
+            php_vb (DEVICE_DISK_CHANNEL_LOAD | SERIAL_COMMAND_SA_CLOSE)
+            END_PUSH
+            jsr iec_listen_second                           ;A+ Y+
+            jsr iec_unlisten                                ;A+ Y+
             ;
-            clc                                                 ;OK
+            clc                                             ;OK
             bcc _finally
         catch
             sec

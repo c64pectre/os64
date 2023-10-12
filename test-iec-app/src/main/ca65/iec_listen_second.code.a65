@@ -23,9 +23,10 @@
 ;;;   P.C: CC=OK / CS=FAIL
 ;;;   X: Error code on fail
 .proc iec_listen_second
-    ;__begin_cedecl_frame
-        ;A_SA = < -1
+    __begin_cedecl_frame
+        A_SA = < -1
         ;
+        lda_p A_SA
         sta SELF_BSOUR                                      ;buffer character
         jsr isoura                                          ;send it
         ;
@@ -33,6 +34,7 @@
         ;
         jsr scatn
         ;
-    ;__end_cedecl_frame
+        ;TODO clc needed?
+    __end_cedecl_frame
     rts
 .endproc
