@@ -47,17 +47,17 @@
         ;jsr load_sprites
         ;bcs _catch
         ;
-        ;jsr load_system_drv
-        ;bcs _catch
+        jsr load_system_drv
+        bcs _catch
         ;
-        ;jsr load_brk_irq_nmi_drv
-        ;bcs _catch
+        jsr load_brk_irq_nmi_drv
+        bcs _catch
         ;
-        ;jsr load_kernal_mod
-        ;bcs _catch
+        jsr load_kernal_mod
+        bcs _catch
         ;
-        ;jsr load_screen_mod
-        ;bcs _catch
+        jsr load_screen_mod
+        bcs _catch
         ;
         jsr load_test_app
         bcs _catch

@@ -2,8 +2,7 @@ set PMP_PROJECT_GROUP_ID=org.c64pectre
 set PMP_PROJECT_ARTIFACT_ID=os64
 set PMP_PROJECT_ARTIFACT_VERSION=1.0.0-SNAPSHOT
 set PMP_PROJECT_PACKAGING=d64
-rem PMP_PROJECT_MODULES=boot load u64-charset sprites system-drv irq-brk-nmi-drv kernal-mod screen-mod test-iec-app
-set PMP_PROJECT_MODULES=boot load test-iec-app
+set PMP_PROJECT_MODULES=boot load u64-charset sprites system-drv irq-brk-nmi-drv kernal-mod screen-mod test-iec-app
 rem boot must be the first module in order for autostart to work.
 
 set PMP_PACKAGER=d64

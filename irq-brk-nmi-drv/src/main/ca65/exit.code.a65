@@ -18,9 +18,9 @@
 
 .proc exit
     sei
-        ldwv KVECTORS_CINV  , KERNAL_KEY
-        ldwv KVECTORS_CBINV , KERNAL_TIMB
-        ldwv KVECTORS_NMINV , KERNAL_NNMI
+        ld_w_v KVECTORS_CINV  , KERNAL_KEY
+        ld_w_v KVECTORS_CBINV , KERNAL_TIMB
+        ld_w_v KVECTORS_NMINV , KERNAL_NNMI
     cli
     ;
     rts

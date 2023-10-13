@@ -18,9 +18,9 @@
 
 .proc init
     sei
-        ldwv KVECTORS_CINV  , irq_handler
-        ldwv KVECTORS_CBINV , brk_handler
-        ldwv KVECTORS_NMINV , nmi_handler
+        ld_w_v KVECTORS_CINV  , irq_handler
+        ld_w_v KVECTORS_CBINV , brk_handler
+        ld_w_v KVECTORS_NMINV , nmi_handler
     cli
     ;
     rts
