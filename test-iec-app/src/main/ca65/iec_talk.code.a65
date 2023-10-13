@@ -22,6 +22,7 @@
 ;;; return:
 ;;;   P.C  CC=OK / CS=FAIL
 ;;;   A    Error code on fail
+;;; changed: A+ X=FP=RSP Y=FSP N+ Z0 C+
 .proc iec_talk
     __begin_cedecl_frame
         A_PA = < -1

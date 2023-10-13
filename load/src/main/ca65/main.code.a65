@@ -18,12 +18,6 @@
 
 ;region Macros
 
-.macro ldxywv W
-    ldx # < (W)
-    ldy # > (W)
-.endmacro
-
-
 .macro PUTS_VW a_string
     ldx # < (a_string)
     ldy # > (a_string)
@@ -68,8 +62,6 @@
         jsr load_test_app
         bcs _catch
         ;
-        jsr LOAD_TEST_APP_AT
-        ;
         bcc _finally
     catch
         PUTS_VW RESOURCE_STRING_MESSAGE_LOAD_FAILED
@@ -78,10 +70,12 @@
         ; NOP
     end
     ;
-    ; Because we've been boot loaded, there is no context to rts to.
-
     ;jsr bootstrap
     ;
+    INIT_FRAME_AND_REGISTERS
+    jsr LOAD_TEST_APP_AT
+    ;
+    ; Because we've been boot loaded, there is no context to rts to.
     jmp [BVECTORS_IMAIN]
     ;
     ; TODO loop forever for now
@@ -103,8 +97,8 @@
 ;;; summmary: Load U64 charset
 ;;; return: CC=OK , CS=FAIL
 .proc load_charset
-    ldxywv RESOURCE_STRING_CHARSET_FILENAME
-    ldbxv LOAD_CHARSET_AT
+    ld_xy_v_w RESOURCE_STRING_CHARSET_FILENAME
+    ld_bx_v LOAD_CHARSET_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
@@ -113,16 +107,16 @@
 ;;; summmary: Load sprites
 ;;; return: CC=OK , CS=FAIL
 .proc load_sprites
-    ldxywv RESOURCE_STRING_SPRITES_FILENAME
-    ldbxv LOAD_SPRITES_AT
+    ld_xy_v_w RESOURCE_STRING_SPRITES_FILENAME
+    ld_bx_v LOAD_SPRITES_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
 .endproc
 
 .proc load_system_drv
-    ldxywv RESOURCE_STRING_SYSTEM_DRV_FILENAME
-    ldbxv LOAD_SYSTEM_DRV_AT
+    ld_xy_v_w RESOURCE_STRING_SYSTEM_DRV_FILENAME
+    ld_bx_v LOAD_SYSTEM_DRV_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
 
@@ -132,8 +126,8 @@
 ;;; summmary: Load BRK handler
 ;;; return: CC=OK , CS=FAIL
 .proc load_brk_irq_nmi_drv
-    ldxywv RESOURCE_STRING_IRQ_BRK_NMI_HANDLER_FILENAME
-    ldbxv LOAD_IRQ_BRK_NMI_DRV_AT
+    ld_xy_v_w RESOURCE_STRING_IRQ_BRK_NMI_HANDLER_FILENAME
+    ld_bx_v LOAD_IRQ_BRK_NMI_DRV_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
@@ -142,8 +136,8 @@
 ;;; summmary: Load kernal mod
 ;;; return: CC=OK , CS=FAIL
 .proc load_kernal_mod
-    ldxywv RESOURCE_STRING_KERNAL_MOD_FILENAME
-    ldbxv LOAD_KERNAL_MOD_AT
+    ld_xy_v_w RESOURCE_STRING_KERNAL_MOD_FILENAME
+    ld_bx_v LOAD_KERNAL_MOD_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
@@ -152,8 +146,8 @@
 ;;; summmary: Load screen mod
 ;;; return: CC=OK , CS=FAIL
 .proc load_screen_mod
-    ldxywv RESOURCE_STRING_SCREEN_MOD_FILENAME
-    ldbxv LOAD_SCREEN_MOD_AT
+    ld_xy_v_w RESOURCE_STRING_SCREEN_MOD_FILENAME
+    ld_bx_v LOAD_SCREEN_MOD_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts
@@ -162,8 +156,8 @@
 ;;; summmary: Load test app
 ;;; return: CC=OK , CS=FAIL
 .proc load_test_app
-    ldxywv RESOURCE_STRING_TEST_APP_FILENAME
-    ldbxv LOAD_TEST_APP_AT
+    ld_xy_v_w RESOURCE_STRING_TEST_APP_FILENAME
+    ld_bx_v LOAD_TEST_APP_AT
     jsr load_prg_at
     ; CC=OK/CS=FAIL
     rts

@@ -25,20 +25,19 @@
 ;;; summary: input a byte from serial bus
 ;;; parameters:
 ;;; return:
-;;;   P.C: CC=OK / CS=FAIL
-;;;   AL byte received if OK
-;;;   AH error code on FAIL (see KERNAL_IO_ERROR_*)
-;;; changed: A, Y
+;;;   C   CC=OK / CS=FAIL
+;;;   AL  Byte received if OK
+;;;   AH  Error code on FAIL (see KERNAL_IO_ERROR_*)
+;;; changed: A X=FP=RSP Y=FSP N+ V+ I0 Z0 C+
 .proc iec_byte_in
     __begin_cedecl_frame
         try
             from outer
                 sei
                 ; Because we rotate all 8 bits into result character read in AL, wo do not need to initialize it.
-                lda # 0                                     ;set eoi/error flag
-                sta AH                                      ;Error code, if any
+                clr_ah                                      ;Clear eoi/error flag
                 ;
-                jsr clkhi                                   ;make sure clock line is released
+                jsr clkhi                                   ;Make sure clock line is released
                 ;
                 ; Wait for clock high
                 from_loop_next
@@ -54,32 +53,32 @@
                     lda # CIA_CRB_TIMER_B_START_STOP_START | CIA_CRB_TIMER_B_UNDERFLOW_RESTART_OFF | CIA_CRB_LOAD_LATCH_INTO_TIMER_ONCE_ON
                                                             ; (timrb=$19)
                     sta CIA_1_CRB
-                    jsr datahi                              ;data line high (makes timming more like vic-20
+                    jsr datahi                              ;Data line high (makes timming more like VIC-20)
                     lda CIA_1_ICR                           ;clear the timer flags
                 loop ;inner
-                    lda CIA_1_ICR                       ;Flags will be cleared after reading the register!
-                    and # CIA_ICR_TIMER_B_MASK          ;$02  check the timer
+                    lda CIA_1_ICR                           ;Flags will be cleared after reading the register!
+                    and # CIA_ICR_TIMER_B_MASK              ;check the timer
                     if_ne_then
-                        tya                             ;check for error (twice thru timeouts)
+                        tya                                 ;check for error (twice thru timeouts)
                         if_ne_then
                             lda # KERNAL_IO_ERROR_READ_TIMEOUT
                             jmp _catch
                         else
                             ;check EQ
                             ;timer ran out: mark EOI
-                            jsr datalo                  ;data line low
-                            jsr clkhi                   ;delay and then set datahi (fix for 40us c64)
+                            jsr datalo                      ;Data line low
+                            jsr clkhi                       ;Delay and then set datahi (fix for 40us c64)
                             lda # KERNAL_IO_EOI
                             ora AH
                             sta AH
                             ; check NE
-                            bne inner::_end             ;break bra
+                            bne inner::_end                 ;break bra
                         end
                     else_end
                 next ;inner
-                    jsr debpia                          ;check the clock line
-                    bmi _loop                           ;no not yet
-                    bpl outer::_end;                    ;yes..... break break bra
+                    jsr debpia                              ;Check the clock line
+                    bmi _loop                               ;no not yet
+                    bpl outer::_end;                        ;yes..... break break bra
                 end ;inner
             next ;outer
                 ; check Y=0
@@ -91,12 +90,11 @@
             ; do the byte transfer
             from
                 ldy # BYTE_BIT_COUNT
-            acp03:
             loop
                 from_loop
                     from_loop_next
-                        lda CIA_2_PRA                   ;wait for clock high
-                        cmp CIA_2_PRA                   ;debounce
+                        lda CIA_2_PRA                       ;wait for clock high
+                        cmp CIA_2_PRA                       ;debounce
                         bne _loop
                     end
                 next

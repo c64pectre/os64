@@ -16,7 +16,8 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-;summary: send untalk command on serial bus
+;;; summary: send untalk command on serial bus
+;;; changed: A+ X=FP=RSP Y=FSP N+ V? I0 Z0 C+
 .proc iec_untalk
     __begin_cedecl_frame
         sei
@@ -25,7 +26,8 @@
         ora # CIA_2_PRA_W_SERIAL_INV_ATN_OUT_SET
         sta CIA_2_PRA
         lda # SERIAL_COMMAND_UNTALK                     ;untalk command
-        jsr untalk_or_unlisten                          ;does cli
+        jsr untalk_or_unlisten
+        ;check I=0
     __end_cedecl_frame
     rts
 .endproc

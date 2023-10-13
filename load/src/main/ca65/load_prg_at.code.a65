@@ -91,7 +91,7 @@
             and # KERNAL_IO_EOI
             bne _end                    ; EOI
         next
-            incbx
+            inc_bx
             jsr KERNAL_STOP
             beq _catch                  ; Stop
             bne _loop                   ; bra

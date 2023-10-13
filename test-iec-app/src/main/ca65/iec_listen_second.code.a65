@@ -20,13 +20,14 @@
 ;;; parameters:
 ;;;   @A_SA: byte Secondary address
 ;;; return:
-;;;   P.C: CC=OK / CS=FAIL
-;;;   X: Error code on fail
+;;;   C  CC=OK / CS=FAIL
+;;;   A  Error code on fail
+;;; changed: A+ X=FP=RSP Y=FSP N+ V+ I0 Z0 C+
 .proc iec_listen_second
     __begin_cedecl_frame
         A_SA = < -1
         ;
-        lda_p A_SA
+        ld_a_p A_SA
         sta SELF_BSOUR                                      ;buffer character
         jsr isoura                                          ;send it
         ;

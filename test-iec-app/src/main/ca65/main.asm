@@ -30,9 +30,6 @@
 .import SELF_C3P0
 .import SELF_BSOUR
 .import SELF_R2D2
-.import L_BSOUR1
-.import L_COUNT
-.import L_STATUS
 
 .import load_prg_at
 

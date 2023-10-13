@@ -19,6 +19,7 @@
 .include "macros.inc"
 .include "structured-programming.inc"
 .include "c64/basic-internal.inc"
+.include "c64/frame-registers.inc"
 .include "c64/petscii.inc"
 .include "c64/registers.inc"
 .include "c64/vic.inc"

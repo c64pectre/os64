@@ -22,26 +22,29 @@
 ;;; return:
 ;;;   P.C  CC=OK / CS=FAIL
 ;;;   A    Error code on fail (see KERNAL_IO_ERROR_*)
+;;; changed: A+ X=FP=RSP Y=FSP N+ V+ Z0 C+
 .proc iec_byte_out
     __begin_cedecl_frame
         A_BYTE = < -1
         ;
-        bit SELF_C3P0                   ;buffered char?
-        if_pl_then
-            ; no
-            sec             
-            ror SELF_C3P0               ;set buffered char flag
-            bne _end                    ;branch always
-        else
-            ;yes send last byte
-            ;pha
+        try
+            bit SELF_C3P0                                   ;buffered char?
+            if_pl_then
+                ; no
+                sec             
+                ror SELF_C3P0                               ;set buffered char flag
+                bne _end                                    ;bra
+            else
+                ;yes send last byte
                 jsr isour
-            ;pla
-        end
-        ;
-        lda_p A_BYTE
-        sta SELF_BSOUR                  ;buffer current char
-        clc                             ;OK
+                bcs _catch
+            end
+            ;
+            ld_a_p A_BYTE
+            sta SELF_BSOUR                                  ;buffer current char
+            clc                                             ;OK
+            bcc _end
+        catch_finally_end                                   ;TODO error handling?
     __end_cedecl_frame
     rts
 .endproc

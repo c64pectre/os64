@@ -20,27 +20,29 @@
 ;;; parameters:
 ;;;   @A_SA: byte Secondary address
 ;;; return:
-;;;   P.C: CC=OK / CS=FAIL
-;;;   X: Error code on fail
+;;;   P.C  CC=OK / CS=FAIL
+;;;   A    Error code on fail
+;;; changed: A+ X=FP=RSP Y=FSP N+ Z0
 .proc iec_talk_second
     __begin_cedecl_frame
         A_SA = < -1
         ;
-        lda_p A_SA
+        ld_a_p A_SA
         sta SELF_BSOUR                                      ;buffer character
-        jsr isoura                                          ;send second addr
+        jsr isoura                                          ;Send second addr
         ;
         ;shift over to listener
         sei
-            jsr datalo                                      ;data line low
+            jsr datalo
             jsr scatn
-            jsr clkhi                                       ;clock line high jsr/rts
+            jsr clkhi
             from_loop_next
-                jsr debpia                                  ;wait for clock to go low
+                jsr debpia                                  ;AWait for clock to go low
                 bmi _loop
             end
+            ; check N=0
         cli
-        ;check CC
+        ;check C=0
         ;clc                                                ; OK (not in kernal)
         ;
     __end_cedecl_frame

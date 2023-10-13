@@ -1,4 +1,4 @@
-;    test-iec-app: OS64 app test IEC.
+;    load: Load.
 ;    Copyright (C) 2023  C64PECTRE
 ;
 ;    This program is free software: you can redistribute it and/or modify
@@ -16,32 +16,4 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.include "cedecl.inc"
-.include "macros.inc"
-.include "structured-programming.inc"
-.include "c64/cia-1.inc"
-.include "c64/cia-2.inc"
-.include "c64/registers.inc"
-.include "c64/frame-registers.inc"
-.include "c64/kernal-r3.inc"
-
-.include "self.protected.data.a65"
-.include "self.protected.code.a65"
-
-.export SELF_C3P0
-.export SELF_BSOUR
-.export SELF_R2D2
-
-.export clkhi
-.export clklo
-.export datahi
-.export datalo
-.export debpia
-.export dlabye
-.export dladlh
-.export isour
-.export isoura
-.export rsp232
-.export scatn
-.export talk_or_listen
-.export untalk_or_unlisten
+.include "c64/frame-registers.export.asm"
