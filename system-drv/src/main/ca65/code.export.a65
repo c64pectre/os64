@@ -83,11 +83,3 @@
 .export io_ora_ax_y
 .export io_and_ax_y
 .export io_eor_ax_y
-.export iec_listen_second
-.export iec_talk_second
-.export iec_byte_in
-.export iec_byte_out
-.export iec_untalk
-.export iec_unlisten
-.export iec_listen
-.export iec_talk

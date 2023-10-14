@@ -1,0 +1,103 @@
+;    load: Load.
+;    Copyright (C) 2023  C64PECTRE
+;
+;    This program is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    (at your option) any later version.
+;
+;    This program is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with this program.  If not, see https://www.gnu.org/licenses/.
+;
+;    Contact: https://github.com/c64pectre/os64/ create an issue
+
+CONFIG_BASE := $6000
+
+;;; summary: Get config string value identified by AX
+;;; return:
+;;;   C   CC:OK/CS:FAIL
+;;;   BX  Pointer to string value if succeeded
+;;; changed: A+ X+ Y+ AX+ BX+
+;;; notes:
+;;;   A config file consists of lines. Each line is an entry that has a two
+;;;   character key, followed by a colon, and after is the config value, up
+;;;   to the end of line or end of file.
+;;;   End of line can be "\r\n" (Windows) or '\r' (Commodore) or '\n' (Gnu/Linux)
+;;;   so unfortunately this makes it complicated
+;;;   TODO: If you want to make it nice, allow spaces and '#' comments.
+.proc get_config_string
+    ; Config file can be bigger than 256 characters.
+    try
+        from for_each_char
+            ld_bx_v CONFIG_BASE
+            clr_y
+        loop
+            lda [BX] , y
+            beq _catch                                      ;Throw
+            cmp AL
+            if_eq_then
+                inc_bx
+                lda [BX] , y
+                beq _catch                                  ;Throw
+                cmp AH
+                if_eq_then
+                    ; Found
+                    ; Skip ':'
+                    inc_bx
+                    lda [BX] , y
+                    beq _catch                              ;Throw
+                    cmp # PETSCII_NUMBER_SIGN
+                    bne _catch                              ;Throw
+                    inc_bx
+                    lda [BX] , y
+                    clc
+                    bcc for_each_char::_end                 ;Break
+                else_end
+            else_end
+            ;
+            ; Skip to end of line or end of content
+            from_loop_next
+                inc_bx
+                lda [BX] , y
+                beq _catch                                  ;Throw
+                cmp # PETSCII_LF
+                beq _end
+                cmp # PETSCII_RETURN
+                beq _end
+                bne _loop
+            end
+            ;
+            from_loop_next
+                inc_bx
+                lda [BX] , y
+                beq _catch                                  ;Throw
+                cmp # PETSCII_LF
+                beq _loop
+                cmp # PETSCII_RETURN
+                beq _loop
+            end
+        next
+            jmp _loop                                       ;bra
+        end
+
+        clc                                                 ;OK
+        bcc _end
+    catch
+        sec                                                 ;FAIL
+    finally_end
+    ;
+    rts
+.endproc
+
+;;; summary: Get config string value identified by AX
+;;; return:
+;;;   C   CC:OK/CS:FAIL
+;;;   BX  Hex value if succeeded
+.proc get_config_hex
+    rts
+.endproc

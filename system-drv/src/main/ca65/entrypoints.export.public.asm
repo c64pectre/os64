@@ -85,11 +85,3 @@
 .export system_drv_io_ora_ax_y                := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 64
 .export system_drv_io_and_ax_y                := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 65
 .export system_drv_io_eor_ax_y                := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 66
-.export system_drv_iec_listen_second          := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 67
-.export system_drv_iec_talk_second            := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 68
-.export system_drv_iec_byte_in                := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 69
-.export system_drv_iec_byte_out               := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 70
-.export system_drv_iec_untalk                 := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 71
-.export system_drv_iec_unlisten               := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 72
-.export system_drv_iec_listen                 := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 73
-.export system_drv_iec_talk                   := SYSTEM_DRV_ENTRYPOINTS_BASE + 3 * 74

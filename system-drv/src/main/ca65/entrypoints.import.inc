@@ -83,11 +83,3 @@
 .import system_drv_io_ora_ax_y
 .import system_drv_io_and_ax_y
 .import system_drv_io_eor_ax_y
-.import system_drv_iec_listen_second
-.import system_drv_iec_talk_second
-.import system_drv_iec_byte_in
-.import system_drv_iec_byte_out
-.import system_drv_iec_untalk
-.import system_drv_iec_unlisten
-.import system_drv_iec_listen
-.import system_drv_iec_talk

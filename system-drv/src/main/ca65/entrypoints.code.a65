@@ -283,35 +283,3 @@
 .proc jmp_io_eor_ax_y
     jmp io_eor_ax_y
 .endproc
-
-.proc jmp_iec_listen_second
-    jmp iec_listen_second
-.endproc
-
-.proc jmp_iec_talk_second
-    jmp iec_talk_second
-.endproc
-
-.proc jmp_iec_byte_in
-    jmp iec_byte_in
-.endproc
-
-.proc jmp_iec_byte_out
-    jmp iec_byte_out
-.endproc
-
-.proc jmp_iec_untalk
-    jmp iec_untalk
-.endproc
-
-.proc jmp_iec_unlisten
-    jmp iec_unlisten
-.endproc
-
-.proc jmp_iec_listen
-    jmp iec_listen
-.endproc
-
-.proc jmp_iec_talk
-    jmp iec_talk
-.endproc

@@ -1,4 +1,4 @@
-;    system-drv: OS64 System driver.
+;    load: Load.
 ;    Copyright (C) 2023  C64PECTRE
 ;
 ;    This program is free software: you can redistribute it and/or modify
@@ -16,4 +16,13 @@
 ;
 ;    Contact: https://github.com/c64pectre/os64/ create an issue
 
-.include "c64/kernal-r3-internal.export.asm"
+.include "macros.inc"
+.include "structured-programming.inc"
+.include "c64/registers.inc"
+.include "c64/petscii.inc"
+
+.segment "CODE"
+.include "get_config.code.a65"
+
+.export get_config_string
+.export get_config_hex

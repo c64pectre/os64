@@ -21,7 +21,6 @@
 .include "cpu-6510.inc"
 .include "c64/cpu.inc"
 .include "c64/kernal-r3.inc"
-.include "c64/kernal-r3-internal.inc"
 .include "c64/memory-map.inc"
 .include "c64/registers.inc"
 

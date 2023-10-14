@@ -26,6 +26,8 @@
 
 ;endregion
 
+; This is all temporary until we've figured things out.
+.export LOAD_CONFIG_AT              := $6000
 .export LOAD_TEST_APP_AT            := $7000
 .export LOAD_SYSTEM_DRV_AT          := $9000
 .export LOAD_IRQ_BRK_NMI_DRV_AT     := $9800
@@ -41,11 +43,14 @@
     try
         PUTS_VW RESOURCE_STRING_MESSAGE_LOADING
         ;
-        ;jsr load_charset
-        ;bcs _catch
+        jsr load_config
+        bcs _catch
         ;
-        ;jsr load_sprites
-        ;bcs _catch
+        jsr load_charset
+        bcs _catch
+        ;
+        jsr load_sprites
+        bcs _catch
         ;
         jsr load_system_drv
         bcs _catch
@@ -99,8 +104,7 @@
 .proc load_charset
     ld_xy_v_w RESOURCE_STRING_CHARSET_FILENAME
     ld_bx_v LOAD_CHARSET_AT
-    jsr load_prg_at
-    ; CC=OK/CS=FAIL
+    jsr load_prg_at                                         ; CC=OK/CS=FAIL
     rts
 .endproc
 
@@ -109,17 +113,29 @@
 .proc load_sprites
     ld_xy_v_w RESOURCE_STRING_SPRITES_FILENAME
     ld_bx_v LOAD_SPRITES_AT
-    jsr load_prg_at
-    ; CC=OK/CS=FAIL
+    jsr load_prg_at                                         ; CC=OK/CS=FAIL
+    rts
+.endproc
+
+.proc load_config
+    try
+        ld_xy_v_w RESOURCE_STRING_CONFIG_FILENAME
+        ld_bx_v LOAD_CONFIG_AT
+        jsr load_prg_at                                         ; CC=OK/CS=FAIL
+        bcs _catch
+        ; BX points to 1 past loaded content.
+        ; Set null end marker for get_config_*
+        ; check Y=0
+        tya
+        sta [BX] , y
+    catch_finally_end
     rts
 .endproc
 
 .proc load_system_drv
     ld_xy_v_w RESOURCE_STRING_SYSTEM_DRV_FILENAME
     ld_bx_v LOAD_SYSTEM_DRV_AT
-    jsr load_prg_at
-    ; CC=OK/CS=FAIL
-
+    jsr load_prg_at                                         ; CC=OK/CS=FAIL
     rts
 .endproc
 
@@ -128,8 +144,7 @@
 .proc load_brk_irq_nmi_drv
     ld_xy_v_w RESOURCE_STRING_IRQ_BRK_NMI_HANDLER_FILENAME
     ld_bx_v LOAD_IRQ_BRK_NMI_DRV_AT
-    jsr load_prg_at
-    ; CC=OK/CS=FAIL
+    jsr load_prg_at                                         ; CC=OK/CS=FAIL
     rts
 .endproc
 
@@ -138,8 +153,7 @@
 .proc load_kernal_mod
     ld_xy_v_w RESOURCE_STRING_KERNAL_MOD_FILENAME
     ld_bx_v LOAD_KERNAL_MOD_AT
-    jsr load_prg_at
-    ; CC=OK/CS=FAIL
+    jsr load_prg_at                                         ; CC=OK/CS=FAIL
     rts
 .endproc
 
@@ -148,8 +162,7 @@
 .proc load_screen_mod
     ld_xy_v_w RESOURCE_STRING_SCREEN_MOD_FILENAME
     ld_bx_v LOAD_SCREEN_MOD_AT
-    jsr load_prg_at
-    ; CC=OK/CS=FAIL
+    jsr load_prg_at                                         ; CC=OK/CS=FAIL
     rts
 .endproc
 
@@ -158,8 +171,7 @@
 .proc load_test_app
     ld_xy_v_w RESOURCE_STRING_TEST_APP_FILENAME
     ld_bx_v LOAD_TEST_APP_AT
-    jsr load_prg_at
-    ; CC=OK/CS=FAIL
+    jsr load_prg_at                                         ; CC=OK/CS=FAIL
     rts
 .endproc
 

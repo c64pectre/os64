@@ -20,7 +20,7 @@
 ;;; parameters:
 ;;;   X#Y File name NUL terminated
 ;;;   BX Load address
-;;; changed: A, X, Y, AX, BX, CX
+;;; changed: A, X, Y=0, AX, BX, CX
 ;;; return: CC = OK , CS = FAIL
 ;;; notes:
 ;;;   File must contain at least 2 bytes else load will load too much!
